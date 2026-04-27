@@ -61,9 +61,9 @@
 
         .win11-card { 
             background: #ffffff; border: 1px solid rgba(0, 103, 192, 0.15); border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0, 103, 192, 0.04); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s; 
+            box-shadow: 0 4px 12px rgba(0, 103, 192, 0.04); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border 0.3s; 
         }
-        .win11-card-interactive:hover { box-shadow: 0 6px 16px rgba(0, 103, 192, 0.08); transform: translateY(-2px); }
+        .win11-card-interactive:hover { box-shadow: 0 6px 16px rgba(0, 103, 192, 0.08); transform: translateY(-2px); cursor: pointer; }
         .win11-card-interactive:active { transform: scale(0.98); background: #f4f9ff; }
 
         .win11-btn-primary {
@@ -131,8 +131,6 @@
                 border: none;
             }
             [data-tooltip]:hover::before { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-            /* Align Modifiers to prevent clipping on edges */
             [data-tooltip].tooltip-left::before { left: auto; right: 0; transform: translateY(4px); }
             [data-tooltip].tooltip-left:hover::before { transform: translateY(0); }
             [data-tooltip].tooltip-right::before { left: 0; transform: translateY(4px); }
@@ -168,18 +166,33 @@
             0% { opacity: 0; transform: translateY(-10px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .calendar-popup-anim {
-            animation: calendarSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            transform-origin: top center;
-        }
+        .calendar-popup-anim { animation: calendarSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; transform-origin: top center; }
 
-        /* PnL TABLE STYLES */
+        /* PnL TABLE STYLES & PRINT STYLES */
         .pnl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .pnl-table th, .pnl-table td { padding: 8px; border-bottom: 1px solid rgba(0,103,192,0.1); text-align: left; }
         .pnl-table .amount { text-align: right; font-weight: 600; }
         .pnl-table .header-row { font-weight: bold; background-color: rgba(0,103,192,0.05); color: #003366; }
         .pnl-table .indent { padding-left: 20px; color: #004488; }
         .pnl-table .total-row { font-weight: bold; color: #002244; border-top: 2px solid rgba(0,103,192,0.3); border-bottom: 2px double rgba(0,103,192,0.3); background-color: #f4f9ff; }
+        
+        /* HOVER STRIPE EFFECT UNTUK PELAPORAN */
+        .pnl-table tbody tr:not(.header-row):not(.total-row):hover { background-color: rgba(0, 103, 192, 0.08); transition: background-color 0.2s ease; }
+
+        /* PRINT MEDIA QUERIES */
+        @media print {
+            body { background: #fff !important; margin: 0; padding: 0; }
+            #app-container > *:not(#preview-modal) { display: none !important; }
+            #preview-modal { position: static !important; width: 100% !important; height: auto !important; background: transparent !important; z-index: 99999; }
+            #preview-modal > div.absolute.inset-0 { display: none !important; }
+            #preview-modal .win11-dialog { box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 !important; transform: none !important; animation: none !important; }
+            #preview-modal .border-b.bg-white { display: none !important; } 
+            #print-area-wrapper { padding: 0 !important; background: white !important; overflow: visible !important; height: auto !important; }
+            #print-area { box-shadow: none !important; border: none !important; padding: 0 !important; width: 100% !important; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+        }
     </style>
 </head>
 <body>
@@ -262,9 +275,7 @@
                                 <i class="far fa-calendar-alt text-[#0067c0]"></i>
                             </div>
                             <input type="hidden" id="record-date" required>
-                            
-                            <div id="add-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim">
-                            </div>
+                            <div id="add-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim"></div>
                         </div>
 
                         <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Jumlah (RM)</label><input type="number" step="0.01" id="record-amount" placeholder="0.00" class="win11-input" required></div>
@@ -295,9 +306,7 @@
                                 <i class="far fa-calendar-alt text-[#0067c0]"></i>
                             </div>
                             <input type="hidden" id="edit-record-date" required>
-                            
-                            <div id="edit-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim">
-                            </div>
+                            <div id="edit-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim"></div>
                         </div>
 
                         <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Jumlah (RM)</label><input type="number" step="0.01" id="edit-record-amount" class="win11-input" required></div>
@@ -383,24 +392,70 @@
             </div>
         </div>
 
-        <!-- MODAL: EKSPORT PDF LAMA (Sejarah) -->
+        <!-- MODAL: PREVIEW / CETAK PDF (Rekod & Sejarah) -->
         <div id="report-modal" class="hidden absolute inset-0 z-[60] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeModal('report-modal')"></div>
             <div class="win11-dialog w-full max-w-[350px] relative z-10 overflow-hidden win11-anim">
-                <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-file-pdf text-[#0067c0] mr-2"></i>Eksport Laporan Bulanan PDF</h2></div>
+                <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-print text-[#0067c0] mr-2"></i>Cetak / Muat Turun Laporan</h2></div>
                 <div class="px-5 py-4">
-                    <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Bulan Transaksi</label><select id="report-month" class="win11-input"></select></div>
-                    <div class="mb-6"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Jenis Laporan</label>
-                        <select id="report-type" class="win11-input">
-                            <option value="semua">Laporan Penuh Kewangan</option>
-                            <option value="duit_masuk">Laporan DEBIT Sahaja</option>
-                            <option value="duit_keluar">Laporan KREDIT Sahaja</option>
+                    <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Tahun</label><select id="report-year" class="win11-input"></select></div>
+                    <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Bulan</label>
+                        <select id="report-month" class="win11-input">
+                            <option value="semua">Semua Bulan</option><option value="Januari">Januari</option><option value="Februari">Februari</option><option value="Mac">Mac</option><option value="April">April</option><option value="Mei">Mei</option><option value="Jun">Jun</option><option value="Julai">Julai</option><option value="Ogos">Ogos</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Disember">Disember</option>
                         </select>
                     </div>
-                    <button type="button" class="win11-btn-primary !bg-[#0067c0] w-full flex items-center justify-center gap-2" onclick="generatePDF()"><i class="fas fa-download"></i> Muat Turun PDF</button>
+                    <div class="mb-6"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Saringan Transaksi</label>
+                        <select id="report-type" class="win11-input">
+                            <option value="semua">Semua Transaksi (Penuh)</option>
+                            <option value="duit_masuk">Rekod DEBIT Sahaja</option>
+                            <option value="duit_keluar">Rekod KREDIT Sahaja</option>
+                        </select>
+                    </div>
+                    <button type="button" class="win11-btn-primary !bg-[#0067c0] w-full flex items-center justify-center gap-2" onclick="previewReport()"><i class="fas fa-eye"></i> Papar Pratonton</button>
                 </div>
                 <div class="flex justify-end bg-blue-50/60 px-5 py-3 border-t border-blue-100">
                     <button type="button" class="win11-btn-secondary" onclick="closeModal('report-modal')">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERINCIAN BULAN MODAL (Dari Tab Sejarah) -->
+        <div id="month-detail-modal" class="hidden absolute inset-0 z-[60] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeModal('month-detail-modal')"></div>
+            <div class="win11-dialog w-full max-w-[500px] h-[80vh] relative z-10 flex flex-col overflow-hidden win11-anim">
+                <div class="px-5 pt-5 pb-3 border-b border-blue-100 flex justify-between items-center">
+                    <h2 id="month-detail-title" class="text-[18px] font-semibold text-[#003366]">Perincian Bulan</h2>
+                    <button class="w-8 h-8 rounded-full hover:bg-blue-50 text-[#0067c0]" onclick="closeModal('month-detail-modal')"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="px-4 py-2 bg-blue-50/50 flex justify-between items-center text-sm font-semibold border-b border-blue-100">
+                    <span class="text-green-700" id="month-detail-income"></span>
+                    <span class="text-red-700" id="month-detail-expense"></span>
+                </div>
+                <div class="flex-1 overflow-y-auto px-4 py-2 hide-scrollbar" id="month-detail-list">
+                    <!-- Transactions list -->
+                </div>
+                <div class="p-4 border-t border-blue-100 bg-white">
+                    <button id="btn-month-preview" class="win11-btn-primary !bg-[#0067c0] w-full flex items-center justify-center gap-2"><i class="fas fa-file-pdf"></i> Papar / Cetak Laporan PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRATONTON PDF MODAL -->
+        <div id="preview-modal" class="hidden absolute inset-0 z-[80] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal('preview-modal')"></div>
+            <div class="win11-dialog w-full max-w-[700px] h-[85vh] relative z-10 flex flex-col overflow-hidden win11-anim">
+                <div class="px-5 py-3 border-b border-blue-100 flex justify-between items-center bg-white">
+                    <h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-eye text-[#0067c0] mr-2"></i>Pratonton Laporan</h2>
+                    <div class="flex gap-2">
+                        <button class="win11-btn-secondary !py-1" onclick="window.print()"><i class="fas fa-print mr-1"></i> Cetak</button>
+                        <button class="win11-btn-primary !py-1" onclick="downloadPreviewPDF()"><i class="fas fa-download mr-1"></i> PDF</button>
+                        <button class="w-8 h-8 rounded-full hover:bg-red-50 text-red-500" onclick="closeModal('preview-modal')"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8" id="print-area-wrapper">
+                    <div id="print-area" class="bg-white p-8 shadow-sm border border-gray-200 min-h-full">
+                        <!-- Preview content here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -477,32 +532,36 @@
         let activeBudgets = [];
         let unsubTransactions = null;
 
+        // Penapis Data (Filters)
+        let currentStatFilter = 'semua';
+        let currentBudgetFilter = 'semua';
+
+        window.updateStatFilter = (val) => { currentStatFilter = val; renderStatisticsView(document.getElementById('main-content')); };
+        window.updateBudgetFilter = (val) => { currentBudgetFilter = val; renderBudgetsView(document.getElementById('main-content')); };
+
+        const getUniqueMonthYears = () => [...new Set(allTransactions.map(tx => tx.monthYear))];
+
         const calculateTotals = () => {
             summaryGlobal = { income: 0, expense: 0, cashFlow: 0 };
             activeBudgets.forEach(b => b.spent = 0);
-
             let bal = baseBalance;
 
             transactionsData.forEach(day => {
                 let dailyTotal = 0;
                 day.items.forEach(item => {
                     const amt = Math.abs(item.amount);
-
                     if (item.type === 'expense') {
                         const budgetCat = activeBudgets.find(b => b.title === item.subtitle);
                         if (budgetCat) budgetCat.spent += amt;
                         summaryGlobal.expense += amt; 
-                        dailyTotal -= amt;
-                        bal -= amt;
+                        dailyTotal -= amt; bal -= amt;
                     } else if (item.type === 'income') {
                         summaryGlobal.income += amt; 
-                        dailyTotal += amt;
-                        bal += amt;
+                        dailyTotal += amt; bal += amt;
                     }
                 });
                 day.total = dailyTotal;
             });
-
             summaryGlobal.cashFlow = summaryGlobal.income - summaryGlobal.expense;
             currentBalanceGlobal = bal;
         };
@@ -788,7 +847,6 @@
             input.value = '';
         };
 
-        // Simpan maklumat P&L syarikat
         window.saveProfileDetails = async () => {
             if(!userId || !activeProfileId) return;
             const updatedData = {
@@ -817,36 +875,136 @@
             setTimeout(() => { btn.innerText = oldTxt; btn.classList.remove('!bg-[#107c10]'); window.closeModal('budget-modal'); renderContent(); }, 1000);
         };
 
+        // --- SISTEM PRATONTON & CETAK PDF ---
         window.openReportModal = () => {
-            const monthSelect = document.getElementById('report-month');
-            const uniqueMonths = [...new Set(transactionsData.map(d => d.monthYear))];
-            monthSelect.innerHTML = uniqueMonths.length > 0 ? uniqueMonths.map(m => `<option value="${m}">${m}</option>`).join('') : `<option value="">Tiada Rekod</option>`;
+            const yearSelect = document.getElementById('report-year');
+            const uniqueYears = [...new Set(allTransactions.map(tx => tx.isoDate.split('-')[0]))].sort((a,b)=>b-a);
+            yearSelect.innerHTML = `<option value="semua">Semua Tahun</option>` + uniqueYears.map(y => `<option value="${y}">${y}</option>`).join('');
             document.getElementById('report-modal').classList.remove('hidden');
         };
 
-        window.generatePDF = () => {
-            const month = document.getElementById('report-month').value; const type = document.getElementById('report-type').value; if (!month) return; 
-            let reportTitle = ""; let filteredItems = []; let totalAmount = 0;
-            transactionsData.forEach(dayGroup => {
-                if(dayGroup.monthYear === month) {
-                    dayGroup.items.forEach(item => {
-                        let include = false;
-                        if(type === 'semua') { include = true; reportTitle = "Laporan Penuh Kewangan"; } 
-                        else if(type === 'duit_masuk' && item.type === 'income') { include = true; reportTitle = "Laporan DEBIT Keseluruhan"; } 
-                        else if(type === 'duit_keluar' && item.type === 'expense') { include = true; reportTitle = "Laporan KREDIT Keseluruhan"; }
-                        if(include) { filteredItems.push([`${dayGroup.date} ${dayGroup.monthYear}`, item.title, item.subtitle, formatMoney(Math.abs(item.amount))]); totalAmount += Math.abs(item.amount); }
-                    });
+        // Konfigurasi draf laporan terkini untuk dimuat turun
+        window.tempReportFilter = { y: 'semua', m: 'semua', t: 'semua', title: 'Laporan Kewangan' };
+
+        window.previewReport = (isFromSejarah = false, defaultMonthYear = null) => {
+            let year, monthVal, type, titleStr;
+            
+            if(isFromSejarah && defaultMonthYear) {
+                const parts = defaultMonthYear.split(' '); // e.g. "Januari 2024"
+                monthVal = parts[0]; year = parts[1]; type = 'semua';
+                titleStr = `Laporan Transaksi - ${defaultMonthYear}`;
+                window.tempReportFilter = { y: year, m: monthVal, t: type, title: titleStr };
+            } else {
+                year = document.getElementById('report-year').value;
+                monthVal = document.getElementById('report-month').value;
+                type = document.getElementById('report-type').value;
+                titleStr = "Laporan Kewangan";
+                if(year !== 'semua') titleStr += ` Tahun ${year}`;
+                if(monthVal !== 'semua') titleStr += ` (${monthVal})`;
+                window.tempReportFilter = { y: year, m: monthVal, t: type, title: titleStr };
+            }
+            
+            let filtered = []; let totalAmt = 0; let tDebit = 0; let tKredit = 0;
+            
+            allTransactions.forEach(tx => {
+                const txY = tx.isoDate.split('-')[0];
+                const txM = tx.monthYear.split(' ')[0];
+                let yearMatch = (year === 'semua' || txY === year);
+                let monthMatch = (monthVal === 'semua' || tx.monthYear === monthVal || txM === monthVal);
+                
+                if(yearMatch && monthMatch) {
+                    let include = false;
+                    if(type === 'semua') include = true;
+                    else if(type === 'duit_masuk' && tx.type === 'income') include = true;
+                    else if(type === 'duit_keluar' && tx.type === 'expense') include = true;
+                    
+                    if(include) {
+                        filtered.push(tx); totalAmt += Math.abs(tx.amount);
+                        if(tx.type === 'income') tDebit += tx.amount;
+                        else tKredit += Math.abs(tx.amount);
+                    }
                 }
             });
-            if (filteredItems.length === 0) { alert("Tiada data untuk laporan ini."); return; }
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.setFontSize(16); doc.text(`Laporan Syarikat - ${activeProfileName}`, 14, 20);
-            doc.setFontSize(11); doc.text(`${reportTitle} (${month})`, 14, 28);
-            doc.autoTable({ startY: 34, head: [['Tarikh', 'Keterangan', 'Kategori', 'Jumlah']], body: filteredItems, foot: [['', '', 'JUMLAH KESELURUHAN', formatMoney(totalAmount)]], theme: 'grid', headStyles: { fillColor: [0, 103, 192] }, footStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' } });
-            doc.save(`${reportTitle.replace(/ /g, '_')}_${month.replace(/ /g, '_')}.pdf`);
-            window.closeModal('report-modal');
+            
+            let html = `
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold uppercase text-[#003366]">${titleStr}</h2>
+                    <h3 class="text-md font-semibold text-[#004488]">${activeProfileData.name || 'Syarikat Utama'}</h3>
+                </div>
+                <div class="flex justify-between text-[12px] mb-4 bg-gray-100 p-3 rounded">
+                    <div><strong>Jumlah DEBIT (Masuk):</strong> <span class="text-green-700 font-bold">${formatMoney(tDebit)}</span></div>
+                    <div><strong>Jumlah KREDIT (Keluar):</strong> <span class="text-red-700 font-bold">${formatMoney(tKredit)}</span></div>
+                </div>
+                <table class="pnl-table">
+                    <thead><tr class="header-row border-b-2 border-[#0067c0]"><th>Tarikh</th><th>Keterangan</th><th>Kategori</th><th class="text-right">Jumlah (RM)</th></tr></thead>
+                    <tbody>
+            `;
+            
+            if(filtered.length === 0) {
+                html += `<tr><td colspan="4" class="text-center py-6 text-gray-500">Tiada rekod dijumpai bagi saringan ini.</td></tr>`;
+            } else {
+                filtered.forEach(tx => {
+                    html += `<tr class="border-b border-gray-100"><td>${tx.date} ${tx.monthYear}</td><td>${tx.title}</td><td>${tx.subtitle}</td><td class="text-right font-bold ${tx.type === 'income'?'text-green-700':'text-red-700'}">${formatMoney(Math.abs(tx.amount))}</td></tr>`;
+                });
+                html += `<tr class="total-row"><td colspan="3" class="text-right"><strong>JUMLAH KESELURUHAN (RM):</strong></td><td class="amount font-bold text-[#002244]">${formatMoney(totalAmt)}</td></tr>`;
+            }
+            html += `</tbody></table>`;
+            
+            document.getElementById('print-area').innerHTML = html;
+            closeModal('report-modal'); closeModal('month-detail-modal');
+            document.getElementById('preview-modal').classList.remove('hidden');
         };
 
+        window.downloadPreviewPDF = () => {
+            const f = window.tempReportFilter;
+            let filteredItems = []; let totalAmount = 0;
+            
+            allTransactions.forEach(tx => {
+                const txY = tx.isoDate.split('-')[0];
+                const txM = tx.monthYear.split(' ')[0];
+                let yearMatch = (f.y === 'semua' || txY === f.y);
+                let monthMatch = (f.m === 'semua' || tx.monthYear === f.m || txM === f.m);
+                
+                if(yearMatch && monthMatch) {
+                    let include = false;
+                    if(f.t === 'semua') include = true;
+                    else if(f.t === 'duit_masuk' && tx.type === 'income') include = true;
+                    else if(f.t === 'duit_keluar' && tx.type === 'expense') include = true;
+                    if(include) { filteredItems.push([`${tx.date} ${tx.monthYear}`, tx.title, tx.subtitle, formatMoney(Math.abs(tx.amount))]); totalAmount += Math.abs(tx.amount); }
+                }
+            });
+
+            if (filteredItems.length === 0) { alert("Tiada data untuk dimuat turun."); return; }
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFontSize(16); doc.text(`Laporan Syarikat - ${activeProfileData.name || 'Syarikat'}`, 14, 20);
+            doc.setFontSize(11); doc.text(`${f.title}`, 14, 28);
+            doc.autoTable({ startY: 34, head: [['Tarikh', 'Keterangan', 'Kategori', 'Jumlah']], body: filteredItems, foot: [['', '', 'JUMLAH KESELURUHAN', formatMoney(totalAmount)]], theme: 'grid', headStyles: { fillColor: [0, 103, 192] }, footStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' } });
+            doc.save(`${f.title.replace(/ /g, '_')}.pdf`);
+        };
+
+        window.openMonthDetail = (monthYearStr) => {
+            const items = allTransactions.filter(tx => tx.monthYear === monthYearStr);
+            document.getElementById('month-detail-title').innerText = `Perincian: ${monthYearStr}`;
+            
+            let tInc = 0; let tExp = 0; let listHtml = '<div class="flex flex-col gap-2">';
+            items.forEach(tx => {
+                if(tx.type === 'income') tInc += tx.amount; else tExp += Math.abs(tx.amount);
+                let valColor = tx.type === 'income' ? 'text-green-700' : 'text-red-700';
+                listHtml += `<div class="bg-white border border-gray-100 rounded p-3 flex justify-between items-center shadow-sm"><div class="min-w-0"><div class="font-bold text-[13px] text-[#003366] truncate">${tx.title}</div><div class="text-[11px] text-[#004488]">${tx.date} • ${tx.subtitle}</div></div><div class="font-bold text-[14px] shrink-0 pl-2 ${valColor}">${formatMoney(Math.abs(tx.amount))}</div></div>`;
+            });
+            listHtml += '</div>';
+            
+            document.getElementById('month-detail-income').innerText = `DEBIT: ${formatMoney(tInc)}`;
+            document.getElementById('month-detail-expense').innerText = `KREDIT: ${formatMoney(tExp)}`;
+            document.getElementById('month-detail-list').innerHTML = listHtml;
+            
+            const btn = document.getElementById('btn-month-preview');
+            btn.onclick = () => previewReport(true, monthYearStr);
+            
+            document.getElementById('month-detail-modal').classList.remove('hidden');
+        };
+
+        // --- KEMASKINI UI SETIAP TAB ---
         const updateInfoBarUI = () => {
             const elCf = document.getElementById('info-cashflow'); const elBal = document.getElementById('info-balance');
             elCf.innerText = formatMoney(summaryGlobal.cashFlow); elCf.className = `text-[18px] font-bold ${summaryGlobal.cashFlow >= 0 ? 'text-income' : 'text-expense'}`;
@@ -886,13 +1044,10 @@
         };
 
         // --- SISTEM PELAPORAN AKAUN UNTUNG RUGI (P&L) ---
-        let pnlDataCache = null; // Menyimpan data p&l sementara untuk export pdf
+        let pnlDataCache = null;
 
         const renderReportingView = (container) => {
-            const yearsSet = new Set(allTransactions.map(tx => {
-                const parts = tx.isoDate.split('-');
-                return parts[0];
-            }));
+            const yearsSet = new Set(allTransactions.map(tx => tx.isoDate.split('-')[0]));
             const yearsArr = Array.from(yearsSet).sort((a,b) => b-a);
             
             let html = `
@@ -907,59 +1062,40 @@
                     </select>
                 </div>
                 <div id="pnl-report-container" class="win11-card p-4 overflow-hidden shadow-sm bg-white animate-fade-in-up">
-                    <!-- Report Table Here -->
                 </div>
             `;
             container.innerHTML = html;
-            
-            if(yearsArr.length > 0) {
-                window.generatePnLReport();
-            } else {
-                document.getElementById('pnl-report-container').innerHTML = `<div class="text-center p-6 text-[#004488] text-[13px] border border-dashed border-blue-200 rounded-lg bg-blue-50/50">Sila masukkan sekurang-kurangnya satu rekod transaksi untuk menjana laporan.</div>`;
-            }
+            if(yearsArr.length > 0) window.generatePnLReport();
+            else document.getElementById('pnl-report-container').innerHTML = `<div class="text-center p-6 text-[#004488] text-[13px] border border-dashed border-blue-200 rounded-lg bg-blue-50/50">Tiada rekod untuk dijana.</div>`;
         };
 
         window.generatePnLReport = () => {
-            const year = document.getElementById('pnl-year-select').value;
-            if(!year) return;
-
-            // Pengiraan Berdasarkan Tahun
-            let sales = 0, cogs = 0, otherIncome = 0;
-            let expenses = {}; let totalExpenses = 0;
+            const year = document.getElementById('pnl-year-select').value; if(!year) return;
+            let sales = 0, cogs = 0, otherIncome = 0; let expenses = {}; let totalExpenses = 0;
 
             allTransactions.forEach(tx => {
                 if(tx.isoDate.startsWith(year)) {
                     if (tx.type === 'income') {
-                        // Jualan/Perkhidmatan diiktiraf sebagai hasil/sales
                         if (tx.subtitle === 'Jualan' || tx.subtitle === 'Perkhidmatan') { sales += tx.amount; } 
-                        // Suntikan modal diasingkan (bukan P&L), yang lain masuk pendapatan lain
                         else if (tx.subtitle !== 'Suntikan Modal') { otherIncome += tx.amount; }
                     } else if (tx.type === 'expense') {
-                        // Bahan Mentah dianggap COGS (Belian) - Anggaran ringkas
                         if(tx.subtitle === 'Bahan Mentah') { cogs += Math.abs(tx.amount); }
                         else {
                             if(!expenses[tx.subtitle]) expenses[tx.subtitle] = 0;
-                            expenses[tx.subtitle] += Math.abs(tx.amount);
-                            totalExpenses += Math.abs(tx.amount);
+                            expenses[tx.subtitle] += Math.abs(tx.amount); totalExpenses += Math.abs(tx.amount);
                         }
                     }
                 }
             });
 
-            const grossProfit = sales - cogs;
-            const netProfit = grossProfit + otherIncome - totalExpenses;
-            
+            const grossProfit = sales - cogs; const netProfit = grossProfit + otherIncome - totalExpenses;
             pnlDataCache = { year, sales, cogs, grossProfit, otherIncome, expenses, totalExpenses, netProfit };
 
             let expRows = '';
-            for(let key in expenses) {
-                expRows += `<tr><td class="indent">${key}</td><td class="amount">${formatMoney(expenses[key])}</td><td class="amount"></td></tr>`;
-            }
+            for(let key in expenses) { expRows += `<tr><td class="indent">${key}</td><td class="amount">${formatMoney(expenses[key])}</td><td class="amount"></td></tr>`; }
 
             const html = `
-                <div class="text-center mb-6">
-                    <h3 class="font-bold text-[14px] text-[#003366] uppercase">Akaun Untung Rugi Bagi Tahun Berakhir Sehingga 31 Disember ${year}</h3>
-                </div>
+                <div class="text-center mb-6"><h3 class="font-bold text-[14px] text-[#003366] uppercase">Akaun Untung Rugi Bagi Tahun Berakhir Sehingga 31 Disember ${year}</h3></div>
                 <div class="text-[11px] mb-4 text-[#004488] grid grid-cols-[120px_auto] gap-x-2 gap-y-1 bg-blue-50/50 p-3 rounded">
                     <div class="font-bold">NAMA</div><div>: ${activeProfileData.ownerName || '-'}</div>
                     <div class="font-bold">NO. T.I.N</div><div>: ${activeProfileData.taxId || '-'}</div>
@@ -972,72 +1108,20 @@
                     <tbody>
                         <tr class="header-row"><td>PENDAPATAN / JUALAN</td><td class="amount">RM</td><td class="amount">RM</td></tr>
                         <tr><td class="indent">Jualan & Perkhidmatan</td><td class="amount"></td><td class="amount">${formatMoney(sales)}</td></tr>
-                        
                         <tr class="header-row"><td>Tolak: KOS BARANG DIJUAL (COGS)</td><td></td><td></td></tr>
                         <tr><td class="indent">Belian / Bahan Mentah</td><td class="amount"></td><td class="amount">(${formatMoney(cogs)})</td></tr>
-                        
                         <tr class="total-row"><td>UNTUNG / (RUGI) KASAR</td><td></td><td class="amount">${formatMoney(grossProfit)}</td></tr>
-                        
                         <tr class="header-row"><td>Tambah: PENDAPATAN LAIN</td><td></td><td></td></tr>
                         <tr><td class="indent">Lain-lain Pendapatan</td><td class="amount"></td><td class="amount">${formatMoney(otherIncome)}</td></tr>
-                        
                         <tr class="header-row"><td>Tolak: PERBELANJAAN</td><td></td><td></td></tr>
                         ${expRows || `<tr><td class="indent">- Tiada Rekod -</td><td></td><td></td></tr>`}
                         <tr><td></td><td class="amount font-bold border-t border-blue-200">Jumlah Perbelanjaan:</td><td class="amount">(${formatMoney(totalExpenses)})</td></tr>
-                        
                         <tr class="total-row bg-[#0067c0] !text-white text-[14px]"><td>UNTUNG / (RUGI) BERSIH</td><td></td><td class="amount">${formatMoney(netProfit)}</td></tr>
                     </tbody>
                 </table>
             `;
             document.getElementById('pnl-report-container').innerHTML = html;
         };
-
-        window.exportPnLPDF = () => {
-            if(!pnlDataCache) return;
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            
-            doc.setFontSize(12); doc.setFont("helvetica", "bold");
-            doc.text(`AKAUN UNTUNG RUGI BAGI TAHUN BERAKHIR SEHINGGA 31 DISEMBER ${pnlDataCache.year}`, 14, 20);
-            
-            doc.setFontSize(10); doc.setFont("helvetica", "normal");
-            doc.text(`NAMA: ${activeProfileData.ownerName || '-'}`, 14, 30);
-            doc.text(`NO. T.I.N: ${activeProfileData.taxId || '-'}`, 14, 35);
-            doc.text(`NO. K.P: ${activeProfileData.icNumber || '-'}`, 14, 40);
-            doc.text(`PERNIAGAAN: ${activeProfileData.name || '-'}`, 14, 45);
-            doc.text(`NO. SSM: ${activeProfileData.bizRegNo || '-'}`, 14, 50);
-            doc.text(`KOD PERNIAGAAN: ${activeProfileData.bizCode || '-'}`, 14, 55);
-
-            let bodyData = [
-                [{content: 'PENDAPATAN / JUALAN', styles: {fontStyle: 'bold'}}, '', formatMoney(pnlDataCache.sales)],
-                ['  Jualan & Perkhidmatan', '', formatMoney(pnlDataCache.sales)],
-                [{content: 'Tolak: KOS BARANG DIJUAL', styles: {fontStyle: 'bold'}}, '', ''],
-                ['  Belian / Bahan Mentah', '', `(${formatMoney(pnlDataCache.cogs)})`],
-                [{content: 'UNTUNG KASAR', styles: {fontStyle: 'bold', fillColor: [240,245,255]}}, '', {content: formatMoney(pnlDataCache.grossProfit), styles: {fontStyle: 'bold', fillColor: [240,245,255]}}],
-                [{content: 'Tambah: PENDAPATAN LAIN', styles: {fontStyle: 'bold'}}, '', ''],
-                ['  Lain-lain Pendapatan', '', formatMoney(pnlDataCache.otherIncome)],
-                [{content: 'Tolak: PERBELANJAAN', styles: {fontStyle: 'bold'}}, '', '']
-            ];
-
-            for(let key in pnlDataCache.expenses) {
-                bodyData.push([`  ${key}`, formatMoney(pnlDataCache.expenses[key]), '']);
-            }
-            bodyData.push(['', {content: 'Jumlah Belanja:', styles:{fontStyle: 'bold'}}, `(${formatMoney(pnlDataCache.totalExpenses)})`]);
-            
-            bodyData.push([{content: 'UNTUNG BERSIH', styles: {fontStyle: 'bold', textColor: [255,255,255], fillColor: [0,103,192]}}, '', {content: formatMoney(pnlDataCache.netProfit), styles: {fontStyle: 'bold', textColor: [255,255,255], fillColor: [0,103,192]}}]);
-
-            doc.autoTable({
-                startY: 65,
-                head: [['Butiran', 'Sub RM', 'Total RM']],
-                body: bodyData,
-                theme: 'grid',
-                headStyles: { fillColor: [0, 103, 192], textColor: [255, 255, 255] },
-                columnStyles: { 0: {cellWidth: 'auto'}, 1: {halign: 'right', cellWidth: 40}, 2: {halign: 'right', cellWidth: 40} },
-                styles: { fontSize: 10, cellPadding: 3 }
-            });
-
-            doc.save(`Untung_Rugi_${activeProfileData.name.replace(/ /g, '_')}_${pnlDataCache.year}.pdf`);
-        };
-        // --- TAMAT SISTEM PELAPORAN ---
 
         const renderHomeView = (container) => {
             container.innerHTML = `
@@ -1090,25 +1174,44 @@
         };
 
         const renderBudgetsView = (container) => {
+            const uniqueMonths = getUniqueMonthYears();
             let html = `
                 <div class="flex justify-between items-center mb-4 px-2">
                     <h2 class="text-[18px] font-bold text-[#003366]">Pemantauan Had Kewangan</h2>
                     <button class="win11-btn-secondary !text-[#107c10] !py-1 !px-3 tooltip-left" onclick="openBudgetModal()" data-tooltip="Tetapan Had"><i class="fas fa-cog mr-1"></i> Tetapan</button>
                 </div>
+                <div class="mb-4 px-2">
+                    <select class="win11-input !w-auto !py-1 !px-2" onchange="updateBudgetFilter(this.value)">
+                        <option value="semua" ${currentBudgetFilter==='semua'?'selected':''}>Semua Masa</option>
+                        ${uniqueMonths.map(m => `<option value="${m}" ${currentBudgetFilter===m?'selected':''}>${m}</option>`).join('')}
+                    </select>
+                </div>
                 <div class="flex flex-col gap-3">
             `;
             
             let hasVisibleBudget = false;
+            let tDebit = 0; let tKredit = 0;
+
+            const filteredTx = currentBudgetFilter === 'semua' ? allTransactions : allTransactions.filter(tx => tx.monthYear === currentBudgetFilter);
+
+            // Calculate overall debit/credit for header
+            filteredTx.forEach(tx => { if(tx.type === 'income') tDebit += tx.amount; else tKredit += Math.abs(tx.amount); });
+
+            html += `
+                <div class="flex justify-between text-[11px] mb-2 px-2 bg-gray-50 py-2 border rounded border-gray-200">
+                    <div><span class="text-[#004488] font-bold">TOTAL DEBIT:</span> <span class="text-green-700 font-bold">${formatMoney(tDebit)}</span></div>
+                    <div><span class="text-[#004488] font-bold">TOTAL KREDIT:</span> <span class="text-red-700 font-bold">${formatMoney(tKredit)}</span></div>
+                </div>
+            `;
 
             activeBudgets.forEach((b, idx) => {
                 const expandId = `budget-expand-${idx}`;
-                let matchedItems = allTransactions.filter(item => item.type === 'expense' && item.subtitle === b.title);
-
-                if (matchedItems.length === 0) return; 
+                let matchedItems = filteredTx.filter(item => item.type === 'expense' && item.subtitle === b.title);
                 
-                hasVisibleBudget = true;
+                let spentThisPeriod = 0;
                 let itemsHtml = '';
                 matchedItems.forEach(it => {
+                    spentThisPeriod += Math.abs(it.amount);
                     itemsHtml += `
                         <div class="flex justify-between items-center py-2 border-b border-blue-100/60 last:border-0 cursor-pointer hover:bg-blue-50/50" onclick="openEditModal('${it.id}')">
                             <div class="flex items-center gap-3">
@@ -1119,21 +1222,28 @@
                         </div>`;
                 });
 
-                const p = Math.min(100, (b.spent / b.total) * 100);
-                const c = p > 90 ? 'bg-[#c50f1f]' : 'bg-[#107c10]';
-                
-                html += `
-                    <div class="win11-card flex-col items-stretch overflow-hidden border-blue-200/50 animate-fade-in-up" style="animation-delay: ${idx * 50}ms;">
-                        <div class="p-4 win11-card-interactive cursor-pointer select-none" onclick="toggleExpand('${expandId}')">
-                            <div class="flex justify-between items-center mb-3">
-                                <div class="font-semibold text-[14px] text-[#003366]">${b.title}</div>
-                                <i id="icon-${expandId}" class="fas fa-chevron-down text-[12px] text-[#0067c0] transition-transform duration-300 ease-in-out"></i>
+                if (matchedItems.length > 0 || currentBudgetFilter === 'semua') {
+                    hasVisibleBudget = true;
+                    // Note: If 'semua', comparing to monthly budget limit might be inaccurate, but kept for simplicity.
+                    const p = Math.min(100, (spentThisPeriod / b.total) * 100);
+                    const c = p >= 90 ? 'bg-[#c50f1f]' : (p >= 75 ? 'bg-orange-500' : 'bg-[#107c10]');
+                    let warningClass = 'border-blue-200/50 border-transparent';
+                    if (p >= 90) warningClass = 'border-2 border-red-500 shadow-[0_0_12px_rgba(197,15,31,0.2)]';
+                    else if (p >= 75) warningClass = 'border-2 border-orange-400 shadow-[0_0_8px_rgba(234,88,12,0.15)]';
+                    
+                    html += `
+                        <div class="win11-card flex-col items-stretch overflow-hidden ${warningClass} transition-all duration-300 animate-fade-in-up" style="animation-delay: ${idx * 50}ms;">
+                            <div class="p-4 win11-card-interactive cursor-pointer select-none" onclick="toggleExpand('${expandId}')">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="font-semibold text-[14px] text-[#003366]">${b.title}</div>
+                                    <i id="icon-${expandId}" class="fas fa-chevron-down text-[12px] text-[#0067c0] transition-transform duration-300 ease-in-out"></i>
+                                </div>
+                                <div class="w-full h-1.5 rounded-full bg-gray-200 mb-2 overflow-hidden"><div class="h-full ${c} transition-all duration-500" style="width: ${p}%"></div></div>
+                                <div class="flex justify-between text-[11px] font-medium text-[#004488]"><span class="text-[#002244]">${formatMoney(spentThisPeriod)} Digunakan</span><span>Had: ${formatMoney(b.total)}</span></div>
                             </div>
-                            <div class="w-full h-1.5 rounded-full bg-blue-100 mb-2 overflow-hidden"><div class="h-full ${c} transition-all duration-500" style="width: ${p}%"></div></div>
-                            <div class="flex justify-between text-[11px] font-medium text-[#004488]"><span class="text-[#002244]">${formatMoney(b.spent)} Digunakan</span><span>Had: ${formatMoney(b.total)}</span></div>
-                        </div>
-                        <div id="${expandId}" class="max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out bg-blue-50/30"><div class="px-4 py-2 border-t border-blue-100/50 flex flex-col">${itemsHtml}</div></div>
-                    </div>`;
+                            <div id="${expandId}" class="max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out bg-blue-50/30"><div class="px-4 py-2 border-t border-blue-100/50 flex flex-col">${itemsHtml || '<div class="text-[11px] text-center py-2">Tiada Rekod</div>'}</div></div>
+                        </div>`;
+                }
             });
 
             if(!hasVisibleBudget) {
@@ -1155,7 +1265,7 @@
             let h = `
                 <div class="flex justify-between items-center mb-4 px-2">
                     <h2 class="text-[18px] font-bold text-[#003366]">Sejarah Bulanan</h2>
-                    <button class="win11-btn-secondary !text-[#c50f1f] !py-1 !px-3 tooltip-left" onclick="openReportModal()" data-tooltip="Muat Turun PDF"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+                    <button class="win11-btn-secondary !text-[#c50f1f] !py-1 !px-3 tooltip-left" onclick="openReportModal()" data-tooltip="Cetak/Preview Laporan Penuh"><i class="fas fa-print mr-1"></i> Cetak</button>
                 </div>`;
 
             if(data.length === 0) { h += `<div class="text-center p-6 text-[#004488] text-[13px] border border-dashed border-blue-200 rounded-lg bg-blue-50/50">Tiada data sejarah dijumpai.</div>`; container.innerHTML = h; return; }
@@ -1164,8 +1274,8 @@
             data.forEach((d, idx) => {
                 const f = d.i - d.e; const p = (d.i / ((d.i + d.e)||1)) * 100;
                 h += `
-                    <div class="win11-card p-4 flex-col items-stretch border-blue-200/50 animate-fade-in-up relative group" style="animation-delay: ${idx * 50}ms;">
-                        <button onclick="showDeleteConfirm('month', '${d.m}')" class="absolute top-2 right-2 w-7 h-7 bg-red-50 text-red-600 rounded flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-100 hover:scale-110 tooltip-left" data-tooltip="Padam Bulan Ini"><i class="fas fa-trash-alt text-[11px]"></i></button>
+                    <div class="win11-card p-4 flex-col items-stretch border-blue-200/50 animate-fade-in-up relative group cursor-pointer hover:-translate-y-1 transition-transform" style="animation-delay: ${idx * 50}ms;" onclick="openMonthDetail('${d.m}')">
+                        <button onclick="event.stopPropagation(); showDeleteConfirm('month', '${d.m}')" class="absolute top-2 right-2 w-7 h-7 bg-red-50 text-red-600 rounded flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-100 hover:scale-110 tooltip-left" data-tooltip="Padam Bulan Ini"><i class="fas fa-trash-alt text-[11px]"></i></button>
                         <div class="flex justify-between font-semibold text-[14px] mb-3 text-[#003366] pr-6"><span>${d.m}</span><span class="${f>=0?'text-income':'text-expense'}">${formatMoney(f)}</span></div>
                         <div class="w-full h-1.5 rounded-full bg-blue-100 flex overflow-hidden mb-2">
                             <div class="h-full bg-[#c50f1f]" style="width: ${100-p}%"></div><div class="h-full bg-[#107c10]" style="width: ${p}%"></div>
@@ -1178,7 +1288,7 @@
 
         const renderTransactionsView = (container) => {
             if (transactionsData.length === 0) { container.innerHTML = `<div class="text-center p-6 text-[#004488] text-sm border border-dashed border-blue-200 rounded-lg bg-blue-50/50 mt-4">Tiada rekod transaksi dijumpai.</div>`; return; }
-            let html = '<div class="flex justify-between items-center mb-2 px-2"><h2 class="text-[18px] font-bold text-[#003366]">Semua Transaksi</h2><button class="win11-btn-secondary !text-[#c50f1f] !py-1 !px-3 tooltip-left" onclick="openReportModal()" data-tooltip="Muat Turun PDF"><i class="fas fa-download"></i></button></div>'; 
+            let html = '<div class="flex justify-between items-center mb-2 px-2"><h2 class="text-[18px] font-bold text-[#003366]">Semua Transaksi</h2><button class="win11-btn-secondary !text-[#c50f1f] !py-1 !px-3 tooltip-left" onclick="openReportModal()" data-tooltip="Cetak/Pratonton Rekod"><i class="fas fa-print"></i></button></div>'; 
             let delayCount = 0;
             transactionsData.forEach((dayGroup) => {
                 html += `<div class="pt-4 pb-2 px-1 text-[#004488] text-[12px] font-semibold tracking-wide">${dayGroup.date} ${dayGroup.monthYear}</div><div class="flex flex-col gap-2 mb-2">`; 
@@ -1193,23 +1303,58 @@
         };
 
         const renderStatisticsView = (container) => {
-            let categoryTotals = {}; let totalExpense = 0;
-            allTransactions.forEach(item => {
-                if (item.type === 'expense') {
-                    if (!categoryTotals[item.subtitle]) categoryTotals[item.subtitle] = { total: 0, items: [], icon: item.icon };
-                    categoryTotals[item.subtitle].total += Math.abs(item.amount); categoryTotals[item.subtitle].items.push({...item}); totalExpense += Math.abs(item.amount);
+            const uniqueMonths = getUniqueMonthYears();
+            let html = `
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <h2 class="text-[18px] font-bold text-[#003366]">Analisis Kewangan</h2>
+                </div>
+                <div class="mb-4 px-2">
+                    <select class="win11-input !w-auto !py-1 !px-2" onchange="updateStatFilter(this.value)">
+                        <option value="semua" ${currentStatFilter==='semua'?'selected':''}>Semua Masa</option>
+                        ${uniqueMonths.map(m => `<option value="${m}" ${currentStatFilter===m?'selected':''}>${m}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+
+            let debitTotals = {}; let kreditTotals = {}; 
+            let totalDebit = 0; let totalKredit = 0;
+
+            const filteredTx = currentStatFilter === 'semua' ? allTransactions : allTransactions.filter(tx => tx.monthYear === currentStatFilter);
+
+            filteredTx.forEach(item => {
+                if (item.type === 'income') {
+                    if (!debitTotals[item.subtitle]) debitTotals[item.subtitle] = { total: 0, items: [], icon: item.icon };
+                    debitTotals[item.subtitle].total += Math.abs(item.amount); debitTotals[item.subtitle].items.push({...item}); totalDebit += Math.abs(item.amount);
+                } else {
+                    if (!kreditTotals[item.subtitle]) kreditTotals[item.subtitle] = { total: 0, items: [], icon: item.icon };
+                    kreditTotals[item.subtitle].total += Math.abs(item.amount); kreditTotals[item.subtitle].items.push({...item}); totalKredit += Math.abs(item.amount);
                 }
             });
-            const stats = Object.keys(categoryTotals).map(cat => ({ c: cat, a: categoryTotals[cat].total, p: totalExpense > 0 ? (categoryTotals[cat].total / totalExpense * 100) : 0, icon: categoryTotals[cat].icon, items: categoryTotals[cat].items })).sort((a, b) => b.a - a.a);
-            let h = '<h3 class="text-[18px] font-bold text-[#003366] mb-4 px-2">Analisis Kos Operasi</h3><div class="flex flex-col gap-3">';
-            if (stats.length === 0) { h += `<div class="text-center p-6 text-[#004488] text-[13px] border border-dashed border-blue-200 rounded-lg bg-blue-50/50">Tiada perbelanjaan direkodkan setakat ini.</div>`; } 
-            else {
-                stats.forEach((s, idx) => {
-                    const expandId = `stat-expand-${idx}`; let itemsHtml = '';
-                    s.items.forEach(it => { itemsHtml += `<div class="flex justify-between items-center py-2 border-b border-blue-100/60 last:border-0 cursor-pointer hover:bg-blue-50/50" onclick="openEditModal('${it.id}')"><div class="flex items-center gap-3"><div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center"><i class="fas ${it.icon} text-[#0067c0] text-[10px]"></i></div><div><div class="text-[12px] font-semibold text-[#003366]">${it.title}</div><div class="text-[10px] text-[#004488]">${it.date} ${it.monthYear}</div></div></div><div class="text-[12px] font-bold text-expense">${formatMoney(-Math.abs(it.amount))}</div></div>`; });
-                    h += `<div class="win11-card flex-col items-stretch overflow-hidden border-blue-200/50 animate-fade-in-up" style="animation-delay: ${idx * 50}ms;"><div class="p-4 win11-card-interactive cursor-pointer select-none" onclick="toggleExpand('${expandId}')"><div class="flex justify-between items-center mb-2"><div class="flex items-center gap-2"><span class="font-semibold text-[14px] text-[#003366]">${s.c}</span><span class="text-[10px] bg-blue-100 text-[#0067c0] px-1.5 py-0.5 rounded font-medium">${s.items.length} transaksi</span></div><div class="flex items-center gap-2"><span class="text-[14px] font-bold text-expense">${formatMoney(-s.a)}</span><i id="icon-${expandId}" class="fas fa-chevron-down text-[12px] text-[#0067c0] transition-transform duration-300 ease-in-out"></i></div></div><div class="w-full h-1.5 bg-blue-100 rounded-full overflow-hidden"><div class="h-full bg-[#c50f1f]" style="width: ${s.p}%"></div></div></div><div id="${expandId}" class="max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out bg-blue-50/30"><div class="px-4 py-2 border-t border-blue-100/50 flex flex-col">${itemsHtml}</div></div></div>`;
-                });
-            } h += '</div>'; container.innerHTML = h;
+
+            const renderStatsList = (totalsObj, grandTotal, theme, title) => {
+                const statsArr = Object.keys(totalsObj).map(cat => ({ c: cat, a: totalsObj[cat].total, p: grandTotal > 0 ? (totalsObj[cat].total / grandTotal * 100) : 0, icon: totalsObj[cat].icon, items: totalsObj[cat].items })).sort((a, b) => b.a - a.a);
+                let bgBarColor = theme === 'green' ? 'bg-[#107c10]' : 'bg-[#c50f1f]';
+                let textAmtColor = theme === 'green' ? 'text-income' : 'text-expense';
+                let titleBg = theme === 'green' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+                
+                let res = `<div class="mb-6"><div class="px-3 py-2 ${titleBg} border rounded flex justify-between items-center mb-3"><span class="font-bold text-[13px] text-[#003366]">${title}</span><span class="font-bold text-[14px] ${textAmtColor}">${formatMoney(grandTotal)}</span></div><div class="flex flex-col gap-3">`;
+                
+                if (statsArr.length === 0) { res += `<div class="text-center p-4 text-[#004488] text-[12px] border border-dashed border-gray-300 rounded-lg bg-gray-50/50">Tiada rekod.</div>`; }
+                else {
+                    statsArr.forEach((s, idx) => {
+                        const expandId = `stat-${theme}-expand-${idx}`; let itemsHtml = '';
+                        s.items.forEach(it => { itemsHtml += `<div class="flex justify-between items-center py-2 border-b border-blue-100/60 last:border-0 cursor-pointer hover:bg-blue-50/50" onclick="openEditModal('${it.id}')"><div class="flex items-center gap-3"><div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center"><i class="fas ${it.icon} text-[#0067c0] text-[10px]"></i></div><div><div class="text-[12px] font-semibold text-[#003366]">${it.title}</div><div class="text-[10px] text-[#004488]">${it.date} ${it.monthYear}</div></div></div><div class="text-[12px] font-bold ${textAmtColor}">${formatMoney(Math.abs(it.amount))}</div></div>`; });
+                        res += `<div class="win11-card flex-col items-stretch overflow-hidden border-blue-200/50 animate-fade-in-up" style="animation-delay: ${idx * 30}ms;"><div class="p-4 win11-card-interactive cursor-pointer select-none" onclick="toggleExpand('${expandId}')"><div class="flex justify-between items-center mb-2"><div class="flex items-center gap-2"><span class="font-semibold text-[14px] text-[#003366]">${s.c}</span><span class="text-[10px] bg-blue-100 text-[#0067c0] px-1.5 py-0.5 rounded font-medium">${s.items.length} bil</span></div><div class="flex items-center gap-2"><span class="text-[14px] font-bold ${textAmtColor}">${formatMoney(s.a)}</span><i id="icon-${expandId}" class="fas fa-chevron-down text-[12px] text-[#0067c0] transition-transform duration-300 ease-in-out"></i></div></div><div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full ${bgBarColor}" style="width: ${s.p}%"></div></div></div><div id="${expandId}" class="max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out bg-blue-50/30"><div class="px-4 py-2 border-t border-blue-100/50 flex flex-col">${itemsHtml}</div></div></div>`;
+                    });
+                }
+                res += `</div></div>`;
+                return res;
+            };
+
+            html += renderStatsList(debitTotals, totalDebit, 'green', 'Kategori DEBIT (Wang Masuk)');
+            html += renderStatsList(kreditTotals, totalKredit, 'red', 'Kategori KREDIT (Wang Keluar)');
+            
+            container.innerHTML = html;
         };
 
         // --- INISIALISASI ---
