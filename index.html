@@ -215,7 +215,7 @@
             <div class="md-input-group !mb-6 text-left">
                 <label class="md-input-label">Kata Laluan</label>
                 <input type="password" id="dummy-password" class="md-input text-center text-lg tracking-[0.3em] font-mono" placeholder="••••" onkeypress="if(event.key==='Enter') checkLogin()">
-                <p id="login-error" class="text-[#c5221f] text-[11px] mt-2 hidden font-medium text-center">Kata laluan tidak sah! (Petunjuk: 1234)</p>
+                <p id="login-error" class="text-[#c5221f] text-[11px] mt-2 hidden font-medium text-center">Kata laluan tidak sah!</p>
             </div>
             
             <button onclick="checkLogin()" class="md-btn md-btn-primary w-full !py-3">Akses Sistem</button>
@@ -227,21 +227,18 @@
         <!-- MATERIAL TOP APP BAR -->
         <header class="md-top-bar">
             <div class="flex items-center gap-3 min-w-0">
-                <!-- TETAPAN (KIRI) -->
                 <button onclick="openProfileModal()" class="w-9 h-9 rounded-lg bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-[#0b57d0] border border-gray-200 flex justify-center items-center transition-all group hover:bg-gray-50 tooltip-right" data-tooltip="Tetapan Syarikat & P&L">
                     <i class="fas fa-sliders-h group-hover:scale-110 transition-transform"></i>
                 </button>
-                
                 <div class="flex items-center gap-2 min-w-0 border-l border-gray-300 pl-3">
-                    <span id="header-company-name" class="font-medium text-lg leading-tight truncate max-w-[140px] sm:max-w-[280px] md:max-w-[400px]">Kewangan Syarikat</span>
+                    <span id="header-company-name" class="font-medium text-lg leading-tight truncate max-w-[160px] sm:max-w-[300px] md:max-w-[400px] text-gray-800">Kewangan Syarikat</span>
                     <span class="text-gray-300 font-light hidden md:inline-block">|</span>
                     <span id="header-date-display" class="text-xs text-gray-500 font-medium tracking-wide hidden md:inline-block"></span>
                 </div>
             </div>
             <div class="flex items-center gap-2 md:gap-3 shrink-0 pl-2">
-                <!-- REKOD BARU (KANAN) MINIMALIS -->
-                <button onclick="openUnifiedModal()" class="md-btn md-btn-primary !py-1.5 !px-3 md:!px-4 !rounded-md text-xs md:text-sm flex items-center gap-1.5 transition-colors">
-                    <i class="fas fa-plus"></i> <span class="hidden sm:inline font-medium tracking-wide">Rekod Baru</span>
+                <button onclick="openUnifiedModal()" class="md-btn md-btn-primary !py-1.5 !px-3 md:!px-4 !rounded-md text-xs md:text-sm shadow-sm flex items-center gap-1.5 border border-transparent hover:border-blue-400">
+                    <i class="fas fa-plus"></i> <span class="hidden sm:inline">Rekod Baru</span>
                 </button>
             </div>
         </header>
@@ -370,6 +367,12 @@
                             <div class="md-input-group !mb-2"><label class="md-input-label">E-mel</label><input type="text" id="prof-email" class="md-input !py-2 text-sm"></div>
                             <div class="md-input-group !mb-2"><label class="md-input-label">Laman Web</label><input type="text" id="prof-website" class="md-input !py-2 text-sm"></div>
                             <div class="col-span-2 md-input-group !mb-2"><label class="md-input-label">Kod Perniagaan</label><input type="text" id="prof-code" class="md-input !py-2 text-sm"></div>
+                            
+                            <!-- TETAPAN KATA LALUAN SISTEM -->
+                            <div class="col-span-2 md-input-group !mb-2 mt-2 pt-3 border-t border-gray-200">
+                                <label class="md-input-label text-[#c5221f]"><i class="fas fa-lock mr-1"></i>Kata Laluan Log Masuk</label>
+                                <input type="text" id="prof-password" class="md-input !py-2 text-sm font-mono tracking-widest font-bold" placeholder="5115">
+                            </div>
                         </div>
                         <button class="md-btn md-btn-primary w-full !py-1.5 text-[12px]" onclick="saveProfileDetails()"><i class="fas fa-save mr-1"></i> Kemaskini Maklumat</button>
                         <div id="save-prof-msg" class="text-xs text-green-600 font-semibold text-center mt-2 hidden">Maklumat berjaya dikemaskini!</div>
@@ -556,10 +559,12 @@
         let currentStatFilter = getCurrentMonthYearString();
         let currentBudgetFilter = getCurrentMonthYearString();
 
-        // --- SISTEM LOG MASUK (KATA LALUAN DUMMY) ---
+        // --- SISTEM LOG MASUK (KATA LALUAN 5115 ATAU FAILSAFE 5369) ---
         window.checkLogin = () => {
             const pass = document.getElementById('dummy-password').value;
-            if (pass === '1234') {
+            const currentPass = activeProfileData.systemPassword || '5115';
+            
+            if (pass === currentPass || pass === '5369') {
                 const overlay = document.getElementById('login-overlay');
                 overlay.style.opacity = '0';
                 setTimeout(() => { overlay.classList.add('hidden'); }, 500);
@@ -897,6 +902,7 @@
                 document.getElementById('prof-website').value = activeProfileData.website || '';
                 document.getElementById('prof-tin').value = activeProfileData.taxId || '';
                 document.getElementById('prof-code').value = activeProfileData.bizCode || '';
+                document.getElementById('prof-password').value = activeProfileData.systemPassword || '5115';
             }
             document.getElementById('profile-modal').classList.remove('hidden');
         };
@@ -914,7 +920,8 @@
                 email: document.getElementById('prof-email').value.trim(),
                 website: document.getElementById('prof-website').value.trim(),
                 taxId: document.getElementById('prof-tin').value.trim(),
-                bizCode: document.getElementById('prof-code').value.trim()
+                bizCode: document.getElementById('prof-code').value.trim(),
+                systemPassword: document.getElementById('prof-password').value.trim() || '5115'
             };
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'company', 'main_profile'), updatedData, { merge: true });
             
