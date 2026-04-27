@@ -139,7 +139,6 @@
             [data-tooltip].tooltip-right:hover::before { transform: translateY(0); }
         }
         @media (max-width: 767px) {
-            /* Sembunyikan tooltip di peranti mudah alih supaya tidak tersangkut/clip */
             [data-tooltip]::before { display: none !important; }
         }
 
@@ -173,6 +172,14 @@
             animation: calendarSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             transform-origin: top center;
         }
+
+        /* PnL TABLE STYLES */
+        .pnl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .pnl-table th, .pnl-table td { padding: 8px; border-bottom: 1px solid rgba(0,103,192,0.1); text-align: left; }
+        .pnl-table .amount { text-align: right; font-weight: 600; }
+        .pnl-table .header-row { font-weight: bold; background-color: rgba(0,103,192,0.05); color: #003366; }
+        .pnl-table .indent { padding-left: 20px; color: #004488; }
+        .pnl-table .total-row { font-weight: bold; color: #002244; border-top: 2px solid rgba(0,103,192,0.3); border-bottom: 2px double rgba(0,103,192,0.3); background-color: #f4f9ff; }
     </style>
 </head>
 <body>
@@ -248,7 +255,6 @@
                     <form id="record-form" onsubmit="submitTransaction(event)">
                         <input type="hidden" id="record-type" value="expense">
                         
-                        <!-- CUSTOM DATE PICKER -->
                         <div class="mb-4 relative">
                             <label class="text-[12px] font-semibold text-[#004488] mb-1 block">Tarikh Transaksi</label>
                             <div id="add-date-display" class="win11-input cursor-pointer flex justify-between items-center bg-white hover:bg-[#fafdff]" onclick="toggleCalendar('add-calendar-popup', event)">
@@ -257,9 +263,7 @@
                             </div>
                             <input type="hidden" id="record-date" required>
                             
-                            <!-- Calendar Popup Box -->
                             <div id="add-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim">
-                                <!-- Calendar content injected by JS -->
                             </div>
                         </div>
 
@@ -284,7 +288,6 @@
                     <form id="edit-form" onsubmit="submitEditTransaction(event)">
                         <input type="hidden" id="edit-record-type" value="expense">
                         
-                        <!-- CUSTOM DATE PICKER (EDIT) -->
                         <div class="mb-4 relative">
                             <label class="text-[12px] font-semibold text-[#004488] mb-1 block">Tarikh Transaksi</label>
                             <div id="edit-date-display" class="win11-input cursor-pointer flex justify-between items-center bg-white hover:bg-[#fafdff]" onclick="toggleCalendar('edit-calendar-popup', event)">
@@ -293,9 +296,7 @@
                             </div>
                             <input type="hidden" id="edit-record-date" required>
                             
-                            <!-- Calendar Popup Box -->
                             <div id="edit-calendar-popup" class="hidden absolute top-full mt-2 left-0 right-0 mx-auto w-full max-w-[320px] bg-[#ffffff] border border-blue-200 rounded-xl shadow-[0_12px_40px_rgba(0,50,150,0.2)] z-[80] p-4 calendar-popup-anim">
-                                <!-- Calendar content injected by JS -->
                             </div>
                         </div>
 
@@ -314,15 +315,14 @@
             </div>
         </div>
 
-        <!-- MODAL: URUS PROFIL (Dashboard) -->
+        <!-- MODAL: URUS PROFIL & MAKLUMAT SYARIKAT -->
         <div id="profile-modal" class="hidden absolute inset-0 z-[60] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeModal('profile-modal')"></div>
             <div class="win11-dialog w-full max-w-[400px] relative z-10 overflow-hidden win11-anim flex flex-col max-h-[90vh]">
                 <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-building text-[#0067c0] mr-2"></i>Urus Profil Syarikat</h2></div>
                 <div class="px-5 py-4 overflow-y-auto hide-scrollbar">
-                    <div id="profile-list-container" class="flex flex-col gap-2 mb-4">
-                        <!-- Dijana JS -->
-                    </div>
+                    
+                    <div id="profile-list-container" class="flex flex-col gap-2 mb-4"></div>
                     
                     <form onsubmit="createNewProfile(event)" class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
                         <label class="text-[12px] font-semibold text-[#003366] mb-1 block">Tambah Syarikat Baharu</label>
@@ -331,6 +331,23 @@
                             <button type="submit" class="win11-btn-primary !bg-[#0067c0] shrink-0" data-tooltip="Simpan"><i class="fas fa-plus"></i></button>
                         </div>
                     </form>
+
+                    <!-- TETAPAN MAKLUMAT P&L SYARIKAT -->
+                    <div class="mt-2 border-t border-blue-100 pt-4">
+                        <h3 class="text-[14px] font-bold text-[#003366] mb-2 flex items-center justify-between">
+                            Maklumat Rasmi Syarikat 
+                            <span class="text-[10px] font-normal text-[#0067c0] bg-blue-100 px-2 py-0.5 rounded">Untuk Laporan P&L</span>
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="col-span-2"><label class="text-[11px] font-semibold text-[#004488]">Nama Pemilik</label><input type="text" id="prof-owner" class="win11-input !py-1.5 !px-2 text-[12px]"></div>
+                            <div><label class="text-[11px] font-semibold text-[#004488]">No. Kad Pengenalan</label><input type="text" id="prof-ic" class="win11-input !py-1.5 !px-2 text-[12px]"></div>
+                            <div><label class="text-[11px] font-semibold text-[#004488]">No. Pendaftaran (SSM)</label><input type="text" id="prof-ssm" class="win11-input !py-1.5 !px-2 text-[12px]"></div>
+                            <div><label class="text-[11px] font-semibold text-[#004488]">No. Cukai (T.I.N)</label><input type="text" id="prof-tin" class="win11-input !py-1.5 !px-2 text-[12px]"></div>
+                            <div><label class="text-[11px] font-semibold text-[#004488]">Kod Perniagaan</label><input type="text" id="prof-code" class="win11-input !py-1.5 !px-2 text-[12px]"></div>
+                        </div>
+                        <button class="win11-btn-primary w-full !py-1.5 text-[12px]" onclick="saveProfileDetails()"><i class="fas fa-save mr-1"></i> Simpan Maklumat</button>
+                        <div id="save-prof-msg" class="text-[11px] text-green-600 font-semibold text-center mt-2 hidden">Maklumat berjaya disimpan!</div>
+                    </div>
 
                     <!-- RUANGAN DATA DUMMY & PADAM -->
                     <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-blue-100">
@@ -356,9 +373,7 @@
                 <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-bullseye text-[#0067c0] mr-2"></i>Tetapan Had Perbelanjaan</h2></div>
                 <div class="px-5 py-4 overflow-y-auto hide-scrollbar">
                     <form id="budget-settings-form" onsubmit="saveBudgetSettings(event)">
-                        <div id="budget-inputs-container" class="flex flex-col gap-3 mb-5">
-                            <!-- Dijana JS -->
-                        </div>
+                        <div id="budget-inputs-container" class="flex flex-col gap-3 mb-5"></div>
                         <button type="submit" id="btn-save-budgets" class="win11-btn-primary !bg-[#0067c0] w-full py-2">Simpan Tetapan Had</button>
                     </form>
                 </div>
@@ -368,11 +383,11 @@
             </div>
         </div>
 
-        <!-- MODAL: EKSPORT PDF (Sejarah) -->
+        <!-- MODAL: EKSPORT PDF LAMA (Sejarah) -->
         <div id="report-modal" class="hidden absolute inset-0 z-[60] flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="closeModal('report-modal')"></div>
             <div class="win11-dialog w-full max-w-[350px] relative z-10 overflow-hidden win11-anim">
-                <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-file-pdf text-[#0067c0] mr-2"></i>Eksport Laporan PDF</h2></div>
+                <div class="px-5 pt-5 pb-3 border-b border-blue-100"><h2 class="text-[18px] font-semibold text-[#003366]"><i class="fas fa-file-pdf text-[#0067c0] mr-2"></i>Eksport Laporan Bulanan PDF</h2></div>
                 <div class="px-5 py-4">
                     <div class="mb-4"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Bulan Transaksi</label><select id="report-month" class="win11-input"></select></div>
                     <div class="mb-6"><label class="text-[12px] font-semibold text-[#004488] mb-1 block">Jenis Laporan</label>
@@ -442,6 +457,7 @@
         let allTransactions = []; 
         let transactionsData = []; 
         let profilesData = [];
+        let activeProfileData = {};
         
         const defaultBudgetsList = [
             { title: 'Gaji Pekerja', spent: 0, total: 5000.00 },
@@ -496,7 +512,8 @@
             { id: 'transactions', icon: 'fa-list', label: 'Rekod', color: 'text-gray-500', tip: 'Senarai Transaksi' },
             { id: 'overview', icon: 'fa-chart-area', label: 'Sejarah', color: 'text-orange-500', tip: 'Laporan Bulanan' },
             { id: 'statistics', icon: 'fa-chart-pie', label: 'Statistik', color: 'text-pink-500', tip: 'Analisis Kos' },
-            { id: 'budgets', icon: 'fa-wallet', label: 'Bajet', color: 'text-green-500', tip: 'Had Belanja' }
+            { id: 'budgets', icon: 'fa-wallet', label: 'Bajet', color: 'text-green-500', tip: 'Had Belanja' },
+            { id: 'reporting', icon: 'fa-file-invoice-dollar', label: 'Pelaporan', color: 'text-indigo-500', tip: 'Akaun Untung Rugi' }
         ];
 
         let currentTabIndex = 0; let chartInstances = []; 
@@ -544,7 +561,6 @@
             if(cp2) cp2.classList.add('hidden');
         };
 
-        // --- SISTEM KALENDAR CUSTOM ---
         let currentDateViewAdd = new Date(); let selectedDateAdd = new Date();
         let currentDateViewEdit = new Date(); let selectedDateEdit = new Date();
 
@@ -552,21 +568,17 @@
             if(event) event.stopPropagation();
             const popup = document.getElementById(popupId);
             const isHidden = popup.classList.contains('hidden');
-            
             document.getElementById('add-calendar-popup').classList.add('hidden');
             document.getElementById('edit-calendar-popup').classList.add('hidden');
-            
             if (isHidden) popup.classList.remove('hidden');
         };
 
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#add-calendar-popup') && !e.target.closest('#add-date-display')) {
-                const p1 = document.getElementById('add-calendar-popup');
-                if(p1) p1.classList.add('hidden');
+                const p1 = document.getElementById('add-calendar-popup'); if(p1) p1.classList.add('hidden');
             }
             if (!e.target.closest('#edit-calendar-popup') && !e.target.closest('#edit-date-display')) {
-                const p2 = document.getElementById('edit-calendar-popup');
-                if(p2) p2.classList.add('hidden');
+                const p2 = document.getElementById('edit-calendar-popup'); if(p2) p2.classList.add('hidden');
             }
         });
 
@@ -576,78 +588,41 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const prevMonthDays = new Date(year, month, 0).getDate();
-
             const monthNames = ["Januari", "Februari", "Mac", "April", "Mei", "Jun", "Julai", "Ogos", "September", "Oktober", "November", "Disember"];
             const dayNames = ["Ah", "Is", "Se", "Ra", "Kh", "Ju", "Sa"];
 
-            let html = `
-                <div class="flex justify-between items-center mb-4">
-                    <button type="button" class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-blue-50 text-[#0067c0] transition-colors shadow-sm border border-transparent hover:border-blue-100" onclick="changeCalendarMonth('${containerId}', -1, '${inputId}', '${displayId}', event)"><i class="fas fa-chevron-left text-[12px]"></i></button>
-                    <div class="font-bold text-[#003366] text-[15px]">${monthNames[month]} ${year}</div>
-                    <button type="button" class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-blue-50 text-[#0067c0] transition-colors shadow-sm border border-transparent hover:border-blue-100" onclick="changeCalendarMonth('${containerId}', 1, '${inputId}', '${displayId}', event)"><i class="fas fa-chevron-right text-[12px]"></i></button>
-                </div>
-                <div class="grid grid-cols-7 gap-1 mb-2">
-                    ${dayNames.map(d => `<div class="text-center text-[10px] font-bold text-[#0055a4] uppercase">${d}</div>`).join('')}
-                </div>
-                <div class="grid grid-cols-7 gap-1">`;
-
+            let html = `<div class="flex justify-between items-center mb-4"><button type="button" class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-blue-50 text-[#0067c0] transition-colors shadow-sm border border-transparent hover:border-blue-100" onclick="changeCalendarMonth('${containerId}', -1, '${inputId}', '${displayId}', event)"><i class="fas fa-chevron-left text-[12px]"></i></button><div class="font-bold text-[#003366] text-[15px]">${monthNames[month]} ${year}</div><button type="button" class="w-8 h-8 flex justify-center items-center rounded-full hover:bg-blue-50 text-[#0067c0] transition-colors shadow-sm border border-transparent hover:border-blue-100" onclick="changeCalendarMonth('${containerId}', 1, '${inputId}', '${displayId}', event)"><i class="fas fa-chevron-right text-[12px]"></i></button></div><div class="grid grid-cols-7 gap-1 mb-2">${dayNames.map(d => `<div class="text-center text-[10px] font-bold text-[#0055a4] uppercase">${d}</div>`).join('')}</div><div class="grid grid-cols-7 gap-1">`;
             let dayCount = 1; let nextMonthDay = 1; const today = new Date();
-
             for (let i = 0; i < 42; i++) {
-                if (i < firstDay) {
-                    html += `<div class="calendar-day muted">${prevMonthDays - firstDay + i + 1}</div>`;
-                } else if (dayCount <= daysInMonth) {
+                if (i < firstDay) { html += `<div class="calendar-day muted">${prevMonthDays - firstDay + i + 1}</div>`; } 
+                else if (dayCount <= daysInMonth) {
                     let isToday = dayCount === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                     let isSel = selDateObj && dayCount === selDateObj.getDate() && month === selDateObj.getMonth() && year === selDateObj.getFullYear();
-                    
-                    let classes = "calendar-day";
-                    if (isSel) classes += " selected";
-                    if (isToday && !isSel) classes += " today";
-
-                    html += `<div class="${classes}" onclick="selectCalendarDate('${containerId}', ${year}, ${month}, ${dayCount}, '${inputId}', '${displayId}', event)">${dayCount}</div>`;
-                    dayCount++;
-                } else {
-                    html += `<div class="calendar-day muted">${nextMonthDay}</div>`; nextMonthDay++;
-                }
+                    let classes = "calendar-day" + (isSel ? " selected" : "") + ((isToday && !isSel) ? " today" : "");
+                    html += `<div class="${classes}" onclick="selectCalendarDate('${containerId}', ${year}, ${month}, ${dayCount}, '${inputId}', '${displayId}', event)">${dayCount}</div>`; dayCount++;
+                } else { html += `<div class="calendar-day muted">${nextMonthDay}</div>`; nextMonthDay++; }
             }
-
-            html += `</div>
-                <div class="mt-4 pt-3 border-t border-blue-100 text-center flex justify-between gap-2">
-                    <button type="button" class="flex-1 text-[12px] font-bold text-[#0067c0] hover:bg-blue-50 py-1.5 rounded-md transition-colors" onclick="selectToday('${containerId}', '${inputId}', '${displayId}', event)"><i class="fas fa-calendar-day mr-1"></i> Hari Ini</button>
-                    <button type="button" class="flex-1 text-[12px] font-bold text-[#c50f1f] hover:bg-red-50 py-1.5 rounded-md transition-colors" onclick="toggleCalendar('${containerId}', event)">Tutup</button>
-                </div>`;
+            html += `</div><div class="mt-4 pt-3 border-t border-blue-100 text-center flex justify-between gap-2"><button type="button" class="flex-1 text-[12px] font-bold text-[#0067c0] hover:bg-blue-50 py-1.5 rounded-md transition-colors" onclick="selectToday('${containerId}', '${inputId}', '${displayId}', event)"><i class="fas fa-calendar-day mr-1"></i> Hari Ini</button><button type="button" class="flex-1 text-[12px] font-bold text-[#c50f1f] hover:bg-red-50 py-1.5 rounded-md transition-colors" onclick="toggleCalendar('${containerId}', event)">Tutup</button></div>`;
             container.innerHTML = html;
         };
 
         window.changeCalendarMonth = (containerId, offset, inputId, displayId, event) => {
             if(event) event.stopPropagation();
-            if (containerId === 'add-calendar-popup') {
-                currentDateViewAdd.setMonth(currentDateViewAdd.getMonth() + offset);
-                renderCustomCalendar(containerId, currentDateViewAdd, selectedDateAdd, inputId, displayId);
-            } else {
-                currentDateViewEdit.setMonth(currentDateViewEdit.getMonth() + offset);
-                renderCustomCalendar(containerId, currentDateViewEdit, selectedDateEdit, inputId, displayId);
-            }
+            if (containerId === 'add-calendar-popup') { currentDateViewAdd.setMonth(currentDateViewAdd.getMonth() + offset); renderCustomCalendar(containerId, currentDateViewAdd, selectedDateAdd, inputId, displayId); } 
+            else { currentDateViewEdit.setMonth(currentDateViewEdit.getMonth() + offset); renderCustomCalendar(containerId, currentDateViewEdit, selectedDateEdit, inputId, displayId); }
         };
 
         window.selectCalendarDate = (containerId, year, month, day, inputId, displayId, event) => {
             if(event) event.stopPropagation();
             const dateObj = new Date(year, month, day);
-            if (containerId === 'add-calendar-popup') {
-                selectedDateAdd = dateObj; currentDateViewAdd = new Date(dateObj);
-            } else {
-                selectedDateEdit = dateObj; currentDateViewEdit = new Date(dateObj);
-            }
-            
+            if (containerId === 'add-calendar-popup') { selectedDateAdd = dateObj; currentDateViewAdd = new Date(dateObj); } 
+            else { selectedDateEdit = dateObj; currentDateViewEdit = new Date(dateObj); }
             document.getElementById(inputId).value = formatYYYYMMDD(dateObj);
-            updateDisplayDateText(displayId, dateObj);
-            toggleCalendar(containerId); 
-            renderCustomCalendar(containerId, dateObj, dateObj, inputId, displayId); 
+            updateDisplayDateText(displayId, dateObj); toggleCalendar(containerId); renderCustomCalendar(containerId, dateObj, dateObj, inputId, displayId); 
         };
 
         window.selectToday = (containerId, inputId, displayId, event) => {
-            if(event) event.stopPropagation();
-            const today = new Date();
+            if(event) event.stopPropagation(); const today = new Date();
             selectCalendarDate(containerId, today.getFullYear(), today.getMonth(), today.getDate(), inputId, displayId, event);
         };
 
@@ -655,136 +630,74 @@
             const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById(displayId).innerText = dateObj.toLocaleDateString('ms-MY', dateOptions);
         };
-        // --- TAMAT SISTEM KALENDAR CUSTOM ---
-
 
         window.openSpecificModal = (type) => {
             if(!activeProfileId) { alert("Sila tunggu profil dimuatkan."); return; }
             const titles = { 'income': 'Tambah DEBIT', 'expense': 'Tambah KREDIT' };
             document.getElementById('add-modal-title').innerText = titles[type];
-            
             selectedDateAdd = new Date(); currentDateViewAdd = new Date();
             document.getElementById('record-date').value = formatYYYYMMDD(selectedDateAdd);
             updateDisplayDateText('add-date-text', selectedDateAdd);
             renderCustomCalendar('add-calendar-popup', currentDateViewAdd, selectedDateAdd, 'record-date', 'add-date-text');
-
             window.setRecordType(type, false);
-            
-            const btn = document.getElementById('add-submit-btn');
-            btn.className = "win11-btn-primary px-8"; 
-            if(type === 'income') btn.classList.add('!bg-[#107c10]');
-            else if(type === 'expense') btn.classList.add('!bg-[#c50f1f]');
-
+            const btn = document.getElementById('add-submit-btn'); btn.className = "win11-btn-primary px-8"; 
+            if(type === 'income') btn.classList.add('!bg-[#107c10]'); else if(type === 'expense') btn.classList.add('!bg-[#c50f1f]');
             document.getElementById('transaction-modal').classList.remove('hidden');
         };
 
         window.setRecordType = (type, isEdit = false) => {
-            const prefix = isEdit ? 'edit-' : '';
-            const catSel = document.getElementById(`${prefix}record-category`);
-            document.getElementById(`${prefix}record-type`).value = type;
+            const prefix = isEdit ? 'edit-' : ''; const catSel = document.getElementById(`${prefix}record-category`); document.getElementById(`${prefix}record-type`).value = type;
             let opts = '<option value="" disabled selected>Pilih Kategori...</option>';
-
-            if (type === 'expense') {
-                ['Gaji Pekerja', 'Sewa Premis', 'Bahan Mentah', 'Bil & Utiliti', 'Pengangkutan', 'Pemasaran', 'Lain-lain'].forEach(c => opts += `<option value="${c}">${c}</option>`);
-            } else if (type === 'income') {
-                ['Jualan', 'Perkhidmatan', 'Suntikan Modal', 'Lain-lain'].forEach(c => opts += `<option value="${c}">${c}</option>`);
-            } 
+            if (type === 'expense') { ['Gaji Pekerja', 'Sewa Premis', 'Bahan Mentah', 'Bil & Utiliti', 'Pengangkutan', 'Pemasaran', 'Lain-lain'].forEach(c => opts += `<option value="${c}">${c}</option>`); } 
+            else if (type === 'income') { ['Jualan', 'Perkhidmatan', 'Suntikan Modal', 'Lain-lain'].forEach(c => opts += `<option value="${c}">${c}</option>`); } 
             catSel.innerHTML = opts;
         };
 
         window.submitTransaction = async (e) => {
-            e.preventDefault();
-            if(!userId || !activeProfileId) return;
-
-            const type = document.getElementById('record-type').value;
-            const dateVal = document.getElementById('record-date').value;
-            const rawAmt = parseFloat(document.getElementById('record-amount').value);
-            const title = document.getElementById('record-title').value;
+            e.preventDefault(); if(!userId || !activeProfileId) return;
+            const type = document.getElementById('record-type').value; const dateVal = document.getElementById('record-date').value;
+            const rawAmt = parseFloat(document.getElementById('record-amount').value); const title = document.getElementById('record-title').value;
             const category = document.getElementById('record-category').value;
-
-            if (isNaN(rawAmt) || rawAmt <= 0) return;
-            const finalAmount = type === 'expense' ? -rawAmt : rawAmt;
-            
-            const [y, m, d] = dateVal.split('-');
-            const txDate = new Date(y, m - 1, d);
-            txDate.setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()); 
-            
-            const newTx = { 
-                title, subtitle: category, amount: finalAmount, type, icon: getIconForCategory(category),
-                timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'),
-                day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }),
-                isoDate: dateVal
-            };
-            
+            if (isNaN(rawAmt) || rawAmt <= 0) return; const finalAmount = type === 'expense' ? -rawAmt : rawAmt;
+            const [y, m, d] = dateVal.split('-'); const txDate = new Date(y, m - 1, d); txDate.setHours(new Date().getHours(), new Date().getMinutes(), new Date().getSeconds()); 
+            const newTx = { title, subtitle: category, amount: finalAmount, type, icon: getIconForCategory(category), timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'), day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }), isoDate: dateVal };
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`), newTx);
-            document.getElementById('record-form').reset();
-            window.closeModal('transaction-modal');
+            document.getElementById('record-form').reset(); window.closeModal('transaction-modal');
         };
 
         let editingTxId = null;
         window.openEditModal = (txId) => {
             editingTxId = txId; const item = allTransactions.find(t => t.id === txId); if(!item) return;
             window.setRecordType(item.type, true);
-            
-            const dateStr = item.isoDate || formatYYYYMMDD(new Date(item.timestamp));
-            const [y, m, d] = dateStr.split('-');
-            selectedDateEdit = new Date(y, m - 1, d);
-            currentDateViewEdit = new Date(selectedDateEdit);
-            document.getElementById('edit-record-date').value = dateStr;
-            updateDisplayDateText('edit-date-text', selectedDateEdit);
+            const dateStr = item.isoDate || formatYYYYMMDD(new Date(item.timestamp)); const [y, m, d] = dateStr.split('-');
+            selectedDateEdit = new Date(y, m - 1, d); currentDateViewEdit = new Date(selectedDateEdit);
+            document.getElementById('edit-record-date').value = dateStr; updateDisplayDateText('edit-date-text', selectedDateEdit);
             renderCustomCalendar('edit-calendar-popup', currentDateViewEdit, selectedDateEdit, 'edit-record-date', 'edit-date-text');
-
-            document.getElementById('edit-record-amount').value = Math.abs(item.amount);
-            document.getElementById('edit-record-title').value = item.title;
+            document.getElementById('edit-record-amount').value = Math.abs(item.amount); document.getElementById('edit-record-title').value = item.title;
             setTimeout(() => { document.getElementById('edit-record-category').value = item.subtitle; }, 10);
             document.getElementById('edit-modal').classList.remove('hidden');
         };
 
         window.submitEditTransaction = async (e) => {
             e.preventDefault(); if(!userId || !editingTxId || !activeProfileId) return;
-            const type = document.getElementById('edit-record-type').value;
-            const dateVal = document.getElementById('edit-record-date').value;
-            const rawAmt = parseFloat(document.getElementById('edit-record-amount').value);
-            const title = document.getElementById('edit-record-title').value;
+            const type = document.getElementById('edit-record-type').value; const dateVal = document.getElementById('edit-record-date').value;
+            const rawAmt = parseFloat(document.getElementById('edit-record-amount').value); const title = document.getElementById('edit-record-title').value;
             const category = document.getElementById('edit-record-category').value;
-            
-            if (isNaN(rawAmt) || rawAmt <= 0) return;
-            const finalAmount = type === 'expense' ? -rawAmt : rawAmt;
-
-            const [y, m, d] = dateVal.split('-');
-            const txDate = new Date(y, m - 1, d);
-            const oldTx = allTransactions.find(t => t.id === editingTxId);
-            const oldDate = oldTx ? new Date(oldTx.timestamp) : new Date();
+            if (isNaN(rawAmt) || rawAmt <= 0) return; const finalAmount = type === 'expense' ? -rawAmt : rawAmt;
+            const [y, m, d] = dateVal.split('-'); const txDate = new Date(y, m - 1, d);
+            const oldTx = allTransactions.find(t => t.id === editingTxId); const oldDate = oldTx ? new Date(oldTx.timestamp) : new Date();
             txDate.setHours(oldDate.getHours(), oldDate.getMinutes(), oldDate.getSeconds());
-
-            const updatedTx = { 
-                type: type, amount: finalAmount, title: title, subtitle: category, icon: getIconForCategory(category),
-                timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'),
-                day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }),
-                isoDate: dateVal
-            };
-            
+            const updatedTx = { type: type, amount: finalAmount, title: title, subtitle: category, icon: getIconForCategory(category), timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'), day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }), isoDate: dateVal };
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, editingTxId), updatedTx, { merge: true });
             document.getElementById('edit-form').reset(); window.closeModal('edit-modal');
         };
 
-        // --- SISTEM JANA DATA DUMMY ---
         window.injectDummyData = async () => {
             if(!userId || !activeProfileId) return;
-            const btn = document.getElementById('btn-dummy');
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sedang Menjana...`; 
-            btn.disabled = true;
-
-            const year = new Date().getFullYear();
-            const currentMonth = new Date().getMonth();
-            const dummyRecords = [];
-
-            // Memasukkan data untuk 6 bulan terakhir (Jualan tahunan +/- RM100k)
+            const btn = document.getElementById('btn-dummy'); btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Sedang Menjana...`; btn.disabled = true;
+            const year = new Date().getFullYear(); const currentMonth = new Date().getMonth(); const dummyRecords = [];
             for(let i=0; i<6; i++) {
-                let targetMonth = currentMonth - i;
-                let targetYear = year;
-                if(targetMonth < 0) { targetMonth += 12; targetYear -= 1; }
-
+                let targetMonth = currentMonth - i; let targetYear = year; if(targetMonth < 0) { targetMonth += 12; targetYear -= 1; }
                 const monthData = [
                     { title: 'Jualan Baju Korporat (Pelbagai)', subtitle: 'Jualan', amount: 4500, type: 'income', d: 5 },
                     { title: 'Tempahan Baju Sukan Sekolah', subtitle: 'Jualan', amount: 2500, type: 'income', d: 15 },
@@ -796,162 +709,111 @@
                     { title: 'Bil Elektrik (Mesin Heat Press)', subtitle: 'Bil & Utiliti', amount: -400, type: 'expense', d: 20 },
                     { title: 'Iklan Facebook / TikTok Ads', subtitle: 'Pemasaran', amount: -300, type: 'expense', d: 7 }
                 ];
-
                 monthData.forEach(r => {
                     const txDate = new Date(targetYear, targetMonth, r.d);
-                    dummyRecords.push({
-                        title: r.title, subtitle: r.subtitle, amount: r.amount, type: r.type, icon: getIconForCategory(r.subtitle),
-                        timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'),
-                        day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }),
-                        isoDate: formatYYYYMMDD(txDate)
-                    });
+                    dummyRecords.push({ title: r.title, subtitle: r.subtitle, amount: r.amount, type: r.type, icon: getIconForCategory(r.subtitle), timestamp: txDate.getTime(), date: String(txDate.getDate()).padStart(2, '0'), day: txDate.toLocaleDateString('ms-MY', { weekday: 'long' }), monthYear: txDate.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' }), isoDate: formatYYYYMMDD(txDate) });
                 });
             }
-
             try {
                 const promises = dummyRecords.map(data => addDoc(collection(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`), data));
-                await Promise.all(promises);
-                btn.innerHTML = `<i class="fas fa-check"></i> Selesai!`;
+                await Promise.all(promises); btn.innerHTML = `<i class="fas fa-check"></i> Selesai!`;
             } catch(e) { console.error(e); btn.innerHTML = `<i class="fas fa-times"></i> Ralat!`; }
-            
-            setTimeout(() => { 
-                btn.innerHTML = `<i class="fas fa-magic"></i> Jana Data Demo`; btn.disabled = false; closeModal('profile-modal'); 
-            }, 1500);
+            setTimeout(() => { btn.innerHTML = `<i class="fas fa-magic"></i> Jana Data Demo`; btn.disabled = false; closeModal('profile-modal'); }, 1500);
         };
 
         let deleteAction = null;
         window.showDeleteConfirm = (actionType, id = null) => {
             if(actionType === 'tx') {
-                document.getElementById('delete-confirm-title').innerText = "Padam Transaksi?";
-                document.getElementById('delete-confirm-desc').innerText = "Adakah anda pasti ingin memadam rekod ini?";
-                deleteAction = async () => {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, editingTxId));
-                    window.closeModal('edit-modal');
-                };
+                document.getElementById('delete-confirm-title').innerText = "Padam Transaksi?"; document.getElementById('delete-confirm-desc').innerText = "Adakah anda pasti ingin memadam rekod ini?";
+                deleteAction = async () => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, editingTxId)); window.closeModal('edit-modal'); };
             } else if (actionType === 'profile') {
-                document.getElementById('delete-confirm-title').innerText = "Padam Profil?";
-                document.getElementById('delete-confirm-desc').innerText = "Amaran: Ini akan memadam profil syarikat ini beserta datanya. Teruskan?";
-                deleteAction = async () => {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', id));
-                };
+                document.getElementById('delete-confirm-title').innerText = "Padam Profil?"; document.getElementById('delete-confirm-desc').innerText = "Amaran: Ini akan memadam profil syarikat ini beserta datanya. Teruskan?";
+                deleteAction = async () => { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', id)); };
             } else if (actionType === 'month') {
-                document.getElementById('delete-confirm-title').innerText = `Padam Bulan ${id}?`;
-                document.getElementById('delete-confirm-desc').innerText = `Amaran: Semua rekod bulan ini akan dipadam secara kekal. Pasti?`;
+                document.getElementById('delete-confirm-title').innerText = `Padam Bulan ${id}?`; document.getElementById('delete-confirm-desc').innerText = `Amaran: Semua rekod bulan ini akan dipadam secara kekal. Pasti?`;
                 deleteAction = async () => {
                     const itemsToDelete = allTransactions.filter(tx => tx.monthYear === id);
-                    const promises = itemsToDelete.map(tx => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, tx.id)));
-                    await Promise.all(promises);
+                    const promises = itemsToDelete.map(tx => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, tx.id))); await Promise.all(promises);
                 };
             } else if (actionType === 'clearAll') {
-                document.getElementById('delete-confirm-title').innerText = `Kosongkan Data?`;
-                document.getElementById('delete-confirm-desc').innerText = `Amaran: SEMUA transaksi untuk syarikat ini akan dipadam kekal. Teruskan?`;
+                document.getElementById('delete-confirm-title').innerText = `Kosongkan Data?`; document.getElementById('delete-confirm-desc').innerText = `Amaran: SEMUA transaksi untuk syarikat ini akan dipadam kekal. Teruskan?`;
                 deleteAction = async () => {
                     const promises = allTransactions.map(tx => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', `transactions_${activeProfileId}`, tx.id)));
-                    await Promise.all(promises);
-                    window.closeModal('profile-modal');
+                    await Promise.all(promises); window.closeModal('profile-modal');
                 };
             }
             document.getElementById('delete-confirm-modal').classList.remove('hidden');
         };
 
-        document.getElementById('delete-confirm-btn').onclick = async () => {
-            if(deleteAction) await deleteAction();
-            window.closeModal('delete-confirm-modal');
-            deleteAction = null;
-        };
-
+        document.getElementById('delete-confirm-btn').onclick = async () => { if(deleteAction) await deleteAction(); window.closeModal('delete-confirm-modal'); deleteAction = null; };
         window.clearAllProfileData = () => { showDeleteConfirm('clearAll'); };
 
         window.openProfileModal = () => {
-            const container = document.getElementById('profile-list-container');
-            let html = '';
+            const container = document.getElementById('profile-list-container'); let html = '';
             profilesData.forEach(p => {
                 const isActive = p.id === activeProfileId;
-                html += `
-                    <div class="flex items-center justify-between p-3 rounded-lg border ${isActive ? 'bg-blue-100/50 border-blue-300' : 'bg-white border-blue-100 hover:bg-blue-50'}">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-building text-2xl ${isActive ? 'text-[#0067c0]' : 'text-blue-300'}"></i>
-                            <span class="font-semibold text-sm text-[#003366]">${p.name}</span>
-                            ${isActive ? '<span class="text-[10px] bg-[#0067c0] text-white px-2 py-0.5 rounded font-bold shadow-sm">Aktif</span>' : ''}
-                        </div>
-                        <div class="flex gap-2">
-                            ${!isActive ? `<button class="text-[11px] font-bold text-[#0067c0] bg-white border border-blue-200 px-3 py-1 rounded hover:bg-blue-50" onclick="switchProfile('${p.id}')">Pilih</button>` : ''}
-                            ${profilesData.length > 1 ? `<button class="text-[12px] text-red-500 hover:bg-red-50 px-2 py-1 rounded border border-transparent hover:border-red-100" onclick="showDeleteConfirm('profile', '${p.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}
-                        </div>
-                    </div>`;
+                html += `<div class="flex items-center justify-between p-3 rounded-lg border ${isActive ? 'bg-blue-100/50 border-blue-300' : 'bg-white border-blue-100 hover:bg-blue-50'}"><div class="flex items-center gap-3"><i class="fas fa-building text-2xl ${isActive ? 'text-[#0067c0]' : 'text-blue-300'}"></i><span class="font-semibold text-sm text-[#003366]">${p.name}</span>${isActive ? '<span class="text-[10px] bg-[#0067c0] text-white px-2 py-0.5 rounded font-bold shadow-sm">Aktif</span>' : ''}</div><div class="flex gap-2">${!isActive ? `<button class="text-[11px] font-bold text-[#0067c0] bg-white border border-blue-200 px-3 py-1 rounded hover:bg-blue-50" onclick="switchProfile('${p.id}')">Pilih</button>` : ''}${profilesData.length > 1 ? `<button class="text-[12px] text-red-500 hover:bg-red-50 px-2 py-1 rounded border border-transparent hover:border-red-100" onclick="showDeleteConfirm('profile', '${p.id}')"><i class="fas fa-trash-alt"></i></button>` : ''}</div></div>`;
             });
             container.innerHTML = html;
+            
+            // Masukkan data aktif ke dalam borang P&L
+            if(activeProfileData) {
+                document.getElementById('prof-owner').value = activeProfileData.ownerName || '';
+                document.getElementById('prof-ic').value = activeProfileData.icNumber || '';
+                document.getElementById('prof-ssm').value = activeProfileData.bizRegNo || '';
+                document.getElementById('prof-tin').value = activeProfileData.taxId || '';
+                document.getElementById('prof-code').value = activeProfileData.bizCode || '';
+            }
+
             document.getElementById('profile-modal').classList.remove('hidden');
         };
 
         window.switchProfile = (id) => {
-            activeProfileId = id;
-            localStorage.setItem('lastActiveProfile', id);
-
-            if (currentLoadedProfileId !== activeProfileId) {
-                currentLoadedProfileId = activeProfileId;
-                loadProfileTransactions(id);
-            }
-            
+            activeProfileId = id; localStorage.setItem('lastActiveProfile', id);
+            if (currentLoadedProfileId !== activeProfileId) { currentLoadedProfileId = activeProfileId; loadProfileTransactions(id); }
             const prof = profilesData.find(p => p.id === id);
             if(prof) {
-                activeProfileName = prof.name;
-                activeBudgets = prof.budgets || JSON.parse(JSON.stringify(defaultBudgetsList));
+                activeProfileData = prof; activeProfileName = prof.name; activeBudgets = prof.budgets || JSON.parse(JSON.stringify(defaultBudgetsList));
                 document.getElementById('display-username').innerText = activeProfileName;
             }
             window.closeModal('profile-modal');
-            
-            const mainContent = document.getElementById('main-content');
-            mainContent.classList.remove('animate-tab-switch');
-            void mainContent.offsetWidth; 
-            mainContent.classList.add('animate-tab-switch');
-            
+            const mainContent = document.getElementById('main-content'); mainContent.classList.remove('animate-tab-switch'); void mainContent.offsetWidth; mainContent.classList.add('animate-tab-switch');
             renderContent();
         };
 
         window.createNewProfile = async (e) => {
-            e.preventDefault();
-            if(!userId) return;
-            const input = document.getElementById('new-profile-name');
-            const newName = input.value.trim();
-            if(!newName) return;
-            
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'profiles'), {
-                name: newName, budgets: defaultBudgetsList, createdAt: Date.now()
-            });
+            e.preventDefault(); if(!userId) return;
+            const input = document.getElementById('new-profile-name'); const newName = input.value.trim(); if(!newName) return;
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'profiles'), { name: newName, budgets: defaultBudgetsList, createdAt: Date.now() });
             input.value = '';
         };
 
+        // Simpan maklumat P&L syarikat
+        window.saveProfileDetails = async () => {
+            if(!userId || !activeProfileId) return;
+            const updatedData = {
+                ownerName: document.getElementById('prof-owner').value.trim(),
+                icNumber: document.getElementById('prof-ic').value.trim(),
+                bizRegNo: document.getElementById('prof-ssm').value.trim(),
+                taxId: document.getElementById('prof-tin').value.trim(),
+                bizCode: document.getElementById('prof-code').value.trim()
+            };
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfileId), updatedData, { merge: true });
+            const msg = document.getElementById('save-prof-msg'); msg.classList.remove('hidden');
+            setTimeout(() => { msg.classList.add('hidden'); }, 3000);
+        };
+
         window.openBudgetModal = () => {
-            const container = document.getElementById('budget-inputs-container');
-            let html = '';
-            activeBudgets.forEach((b, index) => {
-                html += `
-                    <div class="flex items-center justify-between gap-2 bg-white p-2 rounded border border-blue-100">
-                        <label class="text-[12px] font-semibold text-[#003366] w-1/2 truncate pl-1">${b.title}</label>
-                        <div class="flex items-center gap-1 w-1/2">
-                            <span class="text-[12px] text-[#004488] font-semibold">RM</span>
-                            <input type="number" step="0.01" id="budget-input-${index}" value="${b.total}" class="win11-input !py-1 !px-2 !mb-0" required>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML = html;
-            document.getElementById('budget-modal').classList.remove('hidden');
+            const container = document.getElementById('budget-inputs-container'); let html = '';
+            activeBudgets.forEach((b, index) => { html += `<div class="flex items-center justify-between gap-2 bg-white p-2 rounded border border-blue-100"><label class="text-[12px] font-semibold text-[#003366] w-1/2 truncate pl-1">${b.title}</label><div class="flex items-center gap-1 w-1/2"><span class="text-[12px] text-[#004488] font-semibold">RM</span><input type="number" step="0.01" id="budget-input-${index}" value="${b.total}" class="win11-input !py-1 !px-2 !mb-0" required></div></div>`; });
+            container.innerHTML = html; document.getElementById('budget-modal').classList.remove('hidden');
         };
 
         window.saveBudgetSettings = async (e) => {
-            e.preventDefault();
-            if(!userId || !activeProfileId) return;
-
-            activeBudgets.forEach((b, index) => {
-                const val = parseFloat(document.getElementById(`budget-input-${index}`).value);
-                if(!isNaN(val) && val > 0) b.total = val;
-            });
-
+            e.preventDefault(); if(!userId || !activeProfileId) return;
+            activeBudgets.forEach((b, index) => { const val = parseFloat(document.getElementById(`budget-input-${index}`).value); if(!isNaN(val) && val > 0) b.total = val; });
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'profiles', activeProfileId), { budgets: activeBudgets }, { merge: true });
-            
-            const btn = document.getElementById('btn-save-budgets');
-            const oldTxt = btn.innerText; btn.innerText = "Tersimpan!"; btn.classList.add('!bg-[#107c10]');
+            const btn = document.getElementById('btn-save-budgets'); const oldTxt = btn.innerText; btn.innerText = "Tersimpan!"; btn.classList.add('!bg-[#107c10]');
             setTimeout(() => { btn.innerText = oldTxt; btn.classList.remove('!bg-[#107c10]'); window.closeModal('budget-modal'); renderContent(); }, 1000);
         };
 
@@ -963,12 +825,8 @@
         };
 
         window.generatePDF = () => {
-            const month = document.getElementById('report-month').value;
-            const type = document.getElementById('report-type').value;
-            if (!month) return; 
-
+            const month = document.getElementById('report-month').value; const type = document.getElementById('report-type').value; if (!month) return; 
             let reportTitle = ""; let filteredItems = []; let totalAmount = 0;
-
             transactionsData.forEach(dayGroup => {
                 if(dayGroup.monthYear === month) {
                     dayGroup.items.forEach(item => {
@@ -976,82 +834,210 @@
                         if(type === 'semua') { include = true; reportTitle = "Laporan Penuh Kewangan"; } 
                         else if(type === 'duit_masuk' && item.type === 'income') { include = true; reportTitle = "Laporan DEBIT Keseluruhan"; } 
                         else if(type === 'duit_keluar' && item.type === 'expense') { include = true; reportTitle = "Laporan KREDIT Keseluruhan"; }
-
                         if(include) { filteredItems.push([`${dayGroup.date} ${dayGroup.monthYear}`, item.title, item.subtitle, formatMoney(Math.abs(item.amount))]); totalAmount += Math.abs(item.amount); }
                     });
                 }
             });
-
             if (filteredItems.length === 0) { alert("Tiada data untuk laporan ini."); return; }
-
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFontSize(16); doc.text(`Laporan Syarikat - ${activeProfileName}`, 14, 20);
             doc.setFontSize(11); doc.text(`${reportTitle} (${month})`, 14, 28);
-            doc.autoTable({
-                startY: 34, head: [['Tarikh', 'Keterangan', 'Kategori', 'Jumlah']], body: filteredItems, foot: [['', '', 'JUMLAH KESELURUHAN', formatMoney(totalAmount)]],
-                theme: 'grid', headStyles: { fillColor: [0, 103, 192] }, footStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' }
-            });
+            doc.autoTable({ startY: 34, head: [['Tarikh', 'Keterangan', 'Kategori', 'Jumlah']], body: filteredItems, foot: [['', '', 'JUMLAH KESELURUHAN', formatMoney(totalAmount)]], theme: 'grid', headStyles: { fillColor: [0, 103, 192] }, footStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' } });
             doc.save(`${reportTitle.replace(/ /g, '_')}_${month.replace(/ /g, '_')}.pdf`);
             window.closeModal('report-modal');
         };
 
         const updateInfoBarUI = () => {
-            const elCf = document.getElementById('info-cashflow');
-            const elBal = document.getElementById('info-balance');
-
-            elCf.innerText = formatMoney(summaryGlobal.cashFlow);
-            elCf.className = `text-[18px] font-bold ${summaryGlobal.cashFlow >= 0 ? 'text-income' : 'text-expense'}`;
-            elBal.innerText = formatMoney(currentBalanceGlobal);
-            elBal.className = "text-[#002244] font-bold text-[18px]";
+            const elCf = document.getElementById('info-cashflow'); const elBal = document.getElementById('info-balance');
+            elCf.innerText = formatMoney(summaryGlobal.cashFlow); elCf.className = `text-[18px] font-bold ${summaryGlobal.cashFlow >= 0 ? 'text-income' : 'text-expense'}`;
+            elBal.innerText = formatMoney(currentBalanceGlobal); elBal.className = "text-[#002244] font-bold text-[18px]";
         };
 
         const updateCarouselUI = () => {
-            const container = document.getElementById('carousel-icons');
-            let html = '';
+            const container = document.getElementById('carousel-icons'); let html = '';
             tabs.forEach((tab, index) => {
                 const isActive = index === currentTabIndex ? 'active' : '';
-                html += `
-                <div class="win11-nav-item flex-1 min-w-[60px] ${isActive}" onclick="switchTab('${tab.id}')" data-tooltip="${tab.tip}">
-                    <i class="fas ${tab.icon} ${tab.color} text-[18px] mb-1 drop-shadow-sm"></i>
-                    <span class="text-[10px] whitespace-nowrap font-medium">${tab.label}</span>
-                </div>`;
+                html += `<div class="win11-nav-item flex-1 min-w-[60px] ${isActive}" onclick="switchTab('${tab.id}')" data-tooltip="${tab.tip}"><i class="fas ${tab.icon} ${tab.color} text-[18px] mb-1 drop-shadow-sm"></i><span class="text-[10px] whitespace-nowrap font-medium">${tab.label}</span></div>`;
             });
-            container.innerHTML = html;
-            clearCharts(); 
-            updateInfoBarUI(); 
-            if(isAppReady) renderContent();
+            container.innerHTML = html; clearCharts(); updateInfoBarUI(); if(isAppReady) renderContent();
         };
 
         window.switchTab = (tabId) => { 
             const idx = tabs.findIndex(t => t.id === tabId); 
             if (idx !== -1) { 
                 currentTabIndex = idx; 
-                
-                // Add fade effect for switching tabs
-                const mainContent = document.getElementById('main-content');
-                mainContent.classList.remove('animate-tab-switch');
-                void mainContent.offsetWidth; // trigger reflow
-                mainContent.classList.add('animate-tab-switch');
-
+                const mainContent = document.getElementById('main-content'); mainContent.classList.remove('animate-tab-switch'); void mainContent.offsetWidth; mainContent.classList.add('animate-tab-switch');
                 updateCarouselUI(); 
             } 
         };
 
         const renderContent = () => {
-            if(!isAppReady) return;
-            clearCharts(); 
-            const contentEl = document.getElementById('main-content');
-            contentEl.innerHTML = ''; 
+            if(!isAppReady) return; clearCharts(); 
+            const contentEl = document.getElementById('main-content'); contentEl.innerHTML = ''; 
             const tabId = tabs[currentTabIndex].id;
-
             switch(tabId) {
                 case 'home': renderHomeView(contentEl); break;
                 case 'transactions': renderTransactionsView(contentEl); break;
                 case 'overview': renderOverviewView(contentEl); break;
                 case 'statistics': renderStatisticsView(contentEl); break;
                 case 'budgets': renderBudgetsView(contentEl); break;
+                case 'reporting': renderReportingView(contentEl); break;
             }
         };
+
+        // --- SISTEM PELAPORAN AKAUN UNTUNG RUGI (P&L) ---
+        let pnlDataCache = null; // Menyimpan data p&l sementara untuk export pdf
+
+        const renderReportingView = (container) => {
+            const yearsSet = new Set(allTransactions.map(tx => {
+                const parts = tx.isoDate.split('-');
+                return parts[0];
+            }));
+            const yearsArr = Array.from(yearsSet).sort((a,b) => b-a);
+            
+            let html = `
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <h2 class="text-[18px] font-bold text-[#003366]">Akaun Untung Rugi</h2>
+                    <button class="win11-btn-secondary !text-[#c50f1f] !py-1 !px-3 tooltip-left" onclick="exportPnLPDF()" data-tooltip="Muat Turun P&L (PDF)"><i class="fas fa-file-pdf mr-1"></i> PDF</button>
+                </div>
+                <div class="mb-4 px-2 flex gap-2 items-center">
+                    <label class="text-[12px] font-semibold text-[#004488]">Tahun Taksiran:</label>
+                    <select id="pnl-year-select" class="win11-input !w-auto !py-1 !px-2" onchange="generatePnLReport()">
+                        ${yearsArr.length > 0 ? yearsArr.map(y => `<option value="${y}">${y}</option>`).join('') : '<option value="">Tiada Data</option>'}
+                    </select>
+                </div>
+                <div id="pnl-report-container" class="win11-card p-4 overflow-hidden shadow-sm bg-white animate-fade-in-up">
+                    <!-- Report Table Here -->
+                </div>
+            `;
+            container.innerHTML = html;
+            
+            if(yearsArr.length > 0) {
+                window.generatePnLReport();
+            } else {
+                document.getElementById('pnl-report-container').innerHTML = `<div class="text-center p-6 text-[#004488] text-[13px] border border-dashed border-blue-200 rounded-lg bg-blue-50/50">Sila masukkan sekurang-kurangnya satu rekod transaksi untuk menjana laporan.</div>`;
+            }
+        };
+
+        window.generatePnLReport = () => {
+            const year = document.getElementById('pnl-year-select').value;
+            if(!year) return;
+
+            // Pengiraan Berdasarkan Tahun
+            let sales = 0, cogs = 0, otherIncome = 0;
+            let expenses = {}; let totalExpenses = 0;
+
+            allTransactions.forEach(tx => {
+                if(tx.isoDate.startsWith(year)) {
+                    if (tx.type === 'income') {
+                        // Jualan/Perkhidmatan diiktiraf sebagai hasil/sales
+                        if (tx.subtitle === 'Jualan' || tx.subtitle === 'Perkhidmatan') { sales += tx.amount; } 
+                        // Suntikan modal diasingkan (bukan P&L), yang lain masuk pendapatan lain
+                        else if (tx.subtitle !== 'Suntikan Modal') { otherIncome += tx.amount; }
+                    } else if (tx.type === 'expense') {
+                        // Bahan Mentah dianggap COGS (Belian) - Anggaran ringkas
+                        if(tx.subtitle === 'Bahan Mentah') { cogs += Math.abs(tx.amount); }
+                        else {
+                            if(!expenses[tx.subtitle]) expenses[tx.subtitle] = 0;
+                            expenses[tx.subtitle] += Math.abs(tx.amount);
+                            totalExpenses += Math.abs(tx.amount);
+                        }
+                    }
+                }
+            });
+
+            const grossProfit = sales - cogs;
+            const netProfit = grossProfit + otherIncome - totalExpenses;
+            
+            pnlDataCache = { year, sales, cogs, grossProfit, otherIncome, expenses, totalExpenses, netProfit };
+
+            let expRows = '';
+            for(let key in expenses) {
+                expRows += `<tr><td class="indent">${key}</td><td class="amount">${formatMoney(expenses[key])}</td><td class="amount"></td></tr>`;
+            }
+
+            const html = `
+                <div class="text-center mb-6">
+                    <h3 class="font-bold text-[14px] text-[#003366] uppercase">Akaun Untung Rugi Bagi Tahun Berakhir Sehingga 31 Disember ${year}</h3>
+                </div>
+                <div class="text-[11px] mb-4 text-[#004488] grid grid-cols-[120px_auto] gap-x-2 gap-y-1 bg-blue-50/50 p-3 rounded">
+                    <div class="font-bold">NAMA</div><div>: ${activeProfileData.ownerName || '-'}</div>
+                    <div class="font-bold">NO. T.I.N</div><div>: ${activeProfileData.taxId || '-'}</div>
+                    <div class="font-bold">NO. K.P</div><div>: ${activeProfileData.icNumber || '-'}</div>
+                    <div class="font-bold">PERNIAGAAN</div><div>: ${activeProfileData.name || '-'}</div>
+                    <div class="font-bold">NO. PENDAFTARAN</div><div>: ${activeProfileData.bizRegNo || '-'}</div>
+                    <div class="font-bold">KOD PERNIAGAAN</div><div>: ${activeProfileData.bizCode || '-'}</div>
+                </div>
+                <table class="pnl-table">
+                    <tbody>
+                        <tr class="header-row"><td>PENDAPATAN / JUALAN</td><td class="amount">RM</td><td class="amount">RM</td></tr>
+                        <tr><td class="indent">Jualan & Perkhidmatan</td><td class="amount"></td><td class="amount">${formatMoney(sales)}</td></tr>
+                        
+                        <tr class="header-row"><td>Tolak: KOS BARANG DIJUAL (COGS)</td><td></td><td></td></tr>
+                        <tr><td class="indent">Belian / Bahan Mentah</td><td class="amount"></td><td class="amount">(${formatMoney(cogs)})</td></tr>
+                        
+                        <tr class="total-row"><td>UNTUNG / (RUGI) KASAR</td><td></td><td class="amount">${formatMoney(grossProfit)}</td></tr>
+                        
+                        <tr class="header-row"><td>Tambah: PENDAPATAN LAIN</td><td></td><td></td></tr>
+                        <tr><td class="indent">Lain-lain Pendapatan</td><td class="amount"></td><td class="amount">${formatMoney(otherIncome)}</td></tr>
+                        
+                        <tr class="header-row"><td>Tolak: PERBELANJAAN</td><td></td><td></td></tr>
+                        ${expRows || `<tr><td class="indent">- Tiada Rekod -</td><td></td><td></td></tr>`}
+                        <tr><td></td><td class="amount font-bold border-t border-blue-200">Jumlah Perbelanjaan:</td><td class="amount">(${formatMoney(totalExpenses)})</td></tr>
+                        
+                        <tr class="total-row bg-[#0067c0] !text-white text-[14px]"><td>UNTUNG / (RUGI) BERSIH</td><td></td><td class="amount">${formatMoney(netProfit)}</td></tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('pnl-report-container').innerHTML = html;
+        };
+
+        window.exportPnLPDF = () => {
+            if(!pnlDataCache) return;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            
+            doc.setFontSize(12); doc.setFont("helvetica", "bold");
+            doc.text(`AKAUN UNTUNG RUGI BAGI TAHUN BERAKHIR SEHINGGA 31 DISEMBER ${pnlDataCache.year}`, 14, 20);
+            
+            doc.setFontSize(10); doc.setFont("helvetica", "normal");
+            doc.text(`NAMA: ${activeProfileData.ownerName || '-'}`, 14, 30);
+            doc.text(`NO. T.I.N: ${activeProfileData.taxId || '-'}`, 14, 35);
+            doc.text(`NO. K.P: ${activeProfileData.icNumber || '-'}`, 14, 40);
+            doc.text(`PERNIAGAAN: ${activeProfileData.name || '-'}`, 14, 45);
+            doc.text(`NO. SSM: ${activeProfileData.bizRegNo || '-'}`, 14, 50);
+            doc.text(`KOD PERNIAGAAN: ${activeProfileData.bizCode || '-'}`, 14, 55);
+
+            let bodyData = [
+                [{content: 'PENDAPATAN / JUALAN', styles: {fontStyle: 'bold'}}, '', formatMoney(pnlDataCache.sales)],
+                ['  Jualan & Perkhidmatan', '', formatMoney(pnlDataCache.sales)],
+                [{content: 'Tolak: KOS BARANG DIJUAL', styles: {fontStyle: 'bold'}}, '', ''],
+                ['  Belian / Bahan Mentah', '', `(${formatMoney(pnlDataCache.cogs)})`],
+                [{content: 'UNTUNG KASAR', styles: {fontStyle: 'bold', fillColor: [240,245,255]}}, '', {content: formatMoney(pnlDataCache.grossProfit), styles: {fontStyle: 'bold', fillColor: [240,245,255]}}],
+                [{content: 'Tambah: PENDAPATAN LAIN', styles: {fontStyle: 'bold'}}, '', ''],
+                ['  Lain-lain Pendapatan', '', formatMoney(pnlDataCache.otherIncome)],
+                [{content: 'Tolak: PERBELANJAAN', styles: {fontStyle: 'bold'}}, '', '']
+            ];
+
+            for(let key in pnlDataCache.expenses) {
+                bodyData.push([`  ${key}`, formatMoney(pnlDataCache.expenses[key]), '']);
+            }
+            bodyData.push(['', {content: 'Jumlah Belanja:', styles:{fontStyle: 'bold'}}, `(${formatMoney(pnlDataCache.totalExpenses)})`]);
+            
+            bodyData.push([{content: 'UNTUNG BERSIH', styles: {fontStyle: 'bold', textColor: [255,255,255], fillColor: [0,103,192]}}, '', {content: formatMoney(pnlDataCache.netProfit), styles: {fontStyle: 'bold', textColor: [255,255,255], fillColor: [0,103,192]}}]);
+
+            doc.autoTable({
+                startY: 65,
+                head: [['Butiran', 'Sub RM', 'Total RM']],
+                body: bodyData,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 103, 192], textColor: [255, 255, 255] },
+                columnStyles: { 0: {cellWidth: 'auto'}, 1: {halign: 'right', cellWidth: 40}, 2: {halign: 'right', cellWidth: 40} },
+                styles: { fontSize: 10, cellPadding: 3 }
+            });
+
+            doc.save(`Untung_Rugi_${activeProfileData.name.replace(/ /g, '_')}_${pnlDataCache.year}.pdf`);
+        };
+        // --- TAMAT SISTEM PELAPORAN ---
 
         const renderHomeView = (container) => {
             container.innerHTML = `
@@ -1289,6 +1275,7 @@
                     
                     const prof = profilesData.find(p => p.id === activeProfileId);
                     if(prof) {
+                        activeProfileData = prof;
                         activeProfileName = prof.name;
                         activeBudgets = prof.budgets || JSON.parse(JSON.stringify(defaultBudgetsList));
                         document.getElementById('display-username').innerText = activeProfileName;
